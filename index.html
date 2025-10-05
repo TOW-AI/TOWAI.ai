@@ -1,0 +1,2232 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOWAI.ai</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap');
+
+  body {
+    background: radial-gradient(circle at top left, #0a0a0a 60%, #050505);
+    color: #aefaff;
+    font-family: 'Share Tech Mono', monospace;
+    padding: 30px;
+    overflow-x: hidden;
+  }
+
+  h1 {
+    text-align: center;
+    color: #00fff9;
+    text-shadow: 0 0 10px #00fff9, 0 0 25px #00aaff;
+    margin-bottom: 30px;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 1px;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+
+  .controls input {
+    background: #0d0d0d;
+    border: 1px solid #00ffff88;
+    color: #00fff9;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1em;
+    width: 280px;
+    box-shadow: 0 0 8px #00fff922;
+    transition: all 0.3s ease;
+  }
+
+  .controls input:focus {
+    outline: none;
+    box-shadow: 0 0 12px #00fff9aa;
+  }
+
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    background: #0d0d0d;
+    border: 1px solid #00ffff55;
+    color: #00ffff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: bold;
+  }
+
+  .tab.active {
+    background: linear-gradient(90deg, #00ffff33, #0077ff33);
+    box-shadow: 0 0 10px #00fff9aa;
+  }
+
+  #keywords {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .keyword {
+    background: rgba(15, 15, 15, 0.9);
+    border-left: 4px solid #00ffe6;
+    padding: 14px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(10px);
+    display: none;
+  }
+
+  .keyword.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.4s ease;
+  }
+
+  .keyword:hover {
+    background: linear-gradient(90deg, #00ffee22, #00aaff22);
+    box-shadow: 0 0 15px #00ffff55;
+    transform: scale(1.02);
+  }
+
+  .keyword .title {
+    font-weight: bold;
+    color: #aefaff;
+  }
+
+  .description {
+    font-size: 0.9em;
+    color: #b6f0ff;
+    margin-top: 6px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.45s ease;
+  }
+
+  .keyword.active .description {
+    max-height: 200px;
+    opacity: 1;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+    gap: 10px;
+  }
+
+  .pagination button {
+    background: #0e0e0e;
+    color: #00ffff;
+    border: 1px solid #00ffff88;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .pagination button:hover {
+    background: linear-gradient(90deg, #00ffff33, #0077ff33);
+    box-shadow: 0 0 10px #00fff9aa;
+  }
+
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #00fff9, #0077ff); border-radius: 10px; }
+  ::-webkit-scrollbar-track { background: #050505; }
+</style>
+</head>
+<body>
+
+<div id="topLogo" style="display:flex; justify-content:center; margin-top:20px;">
+  <svg id="towaiLogo" width="200" height="60" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+    <!-- گرادیانت نئونی -->
+    <defs>
+      <linearGradient id="neonGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#00fff9; stop-opacity:1" />
+        <stop offset="50%" style="stop-color:#6ffffa; stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#00aaff; stop-opacity:1" />
+      </linearGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="4.5" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+
+    <!-- متن لوگو -->
+    <text x="50%" y="70" text-anchor="middle" font-family="Orbitron, sans-serif"
+          font-size="60" font-weight="700"
+          fill="url(#neonGradient)" filter="url(#glow)">
+      TOWAI
+    </text>
+  </svg>
+</div>
+
+<style>
+#towaiLogo {
+  transform-style: preserve-3d;
+  animation: floatLogo 2.5s ease-in-out infinite alternate;
+  cursor: pointer;
+}
+
+@keyframes floatLogo {
+  0% { transform: translateY(0px) rotateY(0deg); }
+  50% { transform: translateY(-10px) rotateY(10deg); }
+  100% { transform: translateY(-15px) rotateY(15deg); }
+}
+</style>
+
+
+<div class="controls">
+  <input type="text" id="searchInput" placeholder="🔍 جستجوی نئونی...">
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-type="html">HTML</div>
+  <div class="tab" data-type="css">CSS</div>
+  <div class="tab" data-type="js">JS</div>
+</div>
+
+<section id="keywords">
+  <!-- تمام ۳۶ keyword HTML/CSS/JS -->
+  <!-- HTML (12) -->
+  <div class="keyword" data-category="html">&lt;div&gt;<div class="description">بلوک پایه برای بخش‌بندی صفحات وب. برای layout و container استفاده می‌شود و با CSS و JS تعامل دارد. بخش‌بندی و group کردن عناصر برای طراحی منظم UI.</div></div>
+  <div class="keyword" data-category="html">&lt;span&gt;<div class="description">عنصر inline برای سبک‌دهی جزئی متن یا عناصر کوچک. برای text highlight یا icon wrapper کاربرد دارد. قابلیت ترکیب با CSS و JS برای جلوه‌های خاص.</div></div>
+  <div class="keyword" data-category="html">&lt;a&gt;<div class="description">لینک برای هدایت به URL دیگر یا داخلی. با CSS hover و JS event handling برای interactivity کاربرد دارد و بخش navigation وب سایت را مدیریت می‌کند.</div></div>
+  <div class="keyword" data-category="html">&lt;img&gt;<div class="description">نمایش تصاویر در صفحات وب. Attributes: src, alt, width, height. CSS برای responsive و JS برای lazy loading یا gallery کاربرد دارد.</div></div>
+  <div class="keyword" data-category="html">&lt;ul&gt;<div class="description">لیست غیرترتیبی برای منوها و bullet list ها. CSS برای style و JS برای اضافه/حذف آیتم‌ها و interaction استفاده می‌شود.</div></div>
+  <div class="keyword" data-category="html">&lt;ol&gt;<div class="description">لیست ترتیبی برای step-by-step instructions و شماره‌گذاری. CSS و JS برای style و interaction عناصر کاربرد دارد.</div></div>
+  <div class="keyword" data-category="html">&lt;li&gt;<div class="description">آیتم‌های داخل ul یا ol. CSS برای marker, padding و hover و JS برای اضافه یا حذف آیتم‌ها کاربرد دارد.</div></div>
+  <div class="keyword" data-category="html">&lt;form&gt;<div class="description">فرم برای دریافت input کاربر. Attributes: action, method. CSS برای style و JS برای validation، Ajax و submit کاربرد دارد.</div></div>
+  <div class="keyword" data-category="html">&lt;input&gt;<div class="description">فیلد ورودی فرم‌ها: text, password, email و … JS برای validation و dynamic behavior استفاده می‌شود.</div></div>
+  <div class="keyword" data-category="html">&lt;button&gt;<div class="description">دکمه تعاملی برای trigger event یا submit فرم. CSS برای style و animation و JS برای event handling کاربرد دارد.</div></div>
+  <div class="keyword" data-category="html">&lt;header&gt;<div class="description">سرصفحه شامل لوگو، navigation و tagline. CSS برای layout و responsive و JS برای sticky menu کاربرد دارد.</div></div>
+  <div class="keyword" data-category="html">&lt;footer&gt;<div class="description">پایین صفحه شامل copyright، links یا social icons. CSS برای layout و JS برای dynamic content و interactivity کاربرد دارد.</div></div>
+<div class="keyword" data-category="html">1. TOWAI-container
+  <div class="description">بلوک اصلی برای نگه‌داری و گروه‌بندی سایر عناصر UI، پایه layout و component سازی. قابلیت ترکیب با CSS و JS برای جلوه‌های پویا.</div>
+</div>
+<div class="keyword" data-category="html">3. TOWAI-footer
+  <div class="description">عنصر پایین صفحه برای copyright، links و social icons، قابل استایل و تعامل برای UX بهتر.</div>
+</div>
+<div class="keyword" data-category="html">4. TOWAI-nav
+  <div class="description">منوی ناوبری افقی یا عمودی برای هدایت بین صفحات یا بخش‌ها، قابل استایل و ترکیب با JS برای افکت‌های تعاملی.</div>
+</div>
+<div class="keyword" data-category="html">5. TOWAI-section
+  <div class="description">بخش‌بندی منطقی صفحه برای محتواهای مختلف با semantic واضح و امکان style با CSS و JS برای animation و interaction.</div>
+</div>
+<div class="keyword" data-category="html">6. TOWAI-article
+  <div class="description">بخش محتوایی مستقل، مناسب برای متن طولانی، بلاگ یا خبر، قابل ترکیب با CSS و JS برای داینامیک شدن محتوا.</div>
+</div>
+<div class="keyword" data-category="html">7. TOWAI-aside
+  <div class="description">بخش جانبی یا sidebar برای لینک‌ها، ads یا ابزارهای کمکی، قابل استایل با CSS و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">8. TOWAI-main
+  <div class="description">بخش اصلی صفحه که محتوای اصلی کاربر را نمایش می‌دهد، قابل ترکیب با CSS و JS برای layout و interaction پویا.</div>
+</div>
+<div class="keyword" data-category="html">9. TOWAI-card
+  <div class="description">کارت اطلاعاتی با border و shadow، مناسب component بندی عناصر، قابل استایل و انیمیشن با CSS و JS.</div>
+</div>
+<div class="keyword" data-category="html">10. TOWAI-button
+  <div class="description">دکمه تعاملی برای trigger event، submit یا navigation، قابل استایل و اضافه کردن animation با CSS و JS.</div>
+</div>
+<div class="keyword" data-category="html">11. TOWAI-icon
+  <div class="description">نماد یا آیکون کوچک برای دکمه‌ها، منو یا indicators، قابل ترکیب با CSS و JS برای جلوه‌های تعاملی.</div>
+</div>
+<div class="keyword" data-category="html">12. TOWAI-badge
+  <div class="description">نشان کوچک برای notifications یا status indicators، قابل استایل با CSS و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">13. TOWAI-label
+  <div class="description">متن یا تگ توضیحی برای فیلدهای فرم یا بخش‌های UI، قابل ترکیب با CSS و JS برای style و interaction.</div>
+</div>
+<div class="keyword" data-category="html">14. TOWAI-input
+  <div class="description">فیلد ورودی متن یا داده، قابل validation و تعامل با JS، قابل استایل با CSS برای UX بهتر.</div>
+</div>
+<div class="keyword" data-category="html">15. TOWAI-select
+  <div class="description">منوی کشویی برای انتخاب گزینه‌ها، قابل استایل با CSS و مدیریت interaction با JS.</div>
+</div>
+<div class="keyword" data-category="html">16. TOWAI-option
+  <div class="description">گزینه داخل TOWAI-select، قابل انتخاب و مدیریت با JS، استایل قابل تنظیم با CSS.</div>
+</div>
+<div class="keyword" data-category="html">17. TOWAI-textarea
+  <div class="description">فیلد ورودی چندخطی، مناسب فرم‌ها و پیام‌ها، قابل استایل و validation با CSS و JS.</div>
+</div>
+<div class="keyword" data-category="html">18. TOWAI-form
+  <div class="description">فرم جمع‌آوری داده‌های کاربر، شامل validation و submit handler، قابل ترکیب با CSS و JS برای UX بهینه.</div>
+</div>
+<div class="keyword" data-category="html">19. TOWAI-modal
+  <div class="description">پنجره pop-up برای alert، confirmation یا محتوای اضافی، قابل استایل و animation با CSS و JS.</div>
+</div>
+<div class="keyword" data-category="html">20. TOWAI-tooltip
+  <div class="description">متن راهنما که روی hover ظاهر می‌شود، قابل استایل و انیمیشن با CSS و تعامل داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">21. TOWAI-dropdown
+  <div class="description">منوی کشویی تعاملی با JS، مناسب navigation یا filter، قابل استایل و animation با CSS.</div>
+</div>
+<div class="keyword" data-category="html">22. TOWAI-slider
+  <div class="description">کنترل نوار کشویی برای انتخاب مقادیر عددی یا تنظیمات، قابل استایل با CSS و مدیریت interaction با JS.</div>
+</div>
+<div class="keyword" data-category="html">23. TOWAI-carousel
+  <div class="description">گالری تصاویر یا content slider با transition و animation، قابل کنترل با JS و استایل با CSS.</div>
+</div>
+<div class="keyword" data-category="html">24. TOWAI-tab
+  <div class="description">تب برای تغییر بین بخش‌های مختلف بدون رفرش صفحه، قابل استایل و مدیریت با JS برای UX بهتر.</div>
+</div>
+<div class="keyword" data-category="html">25. TOWAI-accordion
+  <div class="description">بخش جمع‌شونده برای FAQs یا content toggle، قابل استایل و انیمیشن با CSS و JS.</div>
+</div>
+<div class="keyword" data-category="html">26. TOWAI-progress
+  <div class="description">نشانگر پیشرفت وظایف یا بارگذاری، قابل داینامیک شدن با JS و استایل با CSS.</div>
+</div>
+<div class="keyword" data-category="html">27. TOWAI-spinner
+  <div class="description">animation بارگذاری یا waiting indicator، قابل کنترل و استایل با CSS و JS.</div>
+</div>
+<div class="keyword" data-category="html">28. TOWAI-breadcrumb
+  <div class="description">مسیر ناوبری صفحات با نمایش hierarchy، قابل استایل با CSS و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">29. TOWAI-overlay
+  <div class="description">لایه پوششی برای modal یا interactive effects، قابل استایل با CSS و مدیریت نمایش با JS.</div>
+</div>
+<div class="keyword" data-category="html">30. TOWAI-toast
+  <div class="description">پیام کوتاه اعلان که به صورت popup نمایش داده می‌شود، قابل مدیریت با JS و استایل با CSS.</div>
+</div>
+<div class="keyword" data-category="html">31. TOWAI-alert
+  <div class="description">پیام هشدار یا اطلاع‌رسانی به کاربر، قابل استایل با CSS و کنترل با JS برای تعامل بهتر.</div>
+</div>
+<div class="keyword" data-category="html">32. TOWAI-tooltip-icon
+  <div class="description">آیکون کوچک با متن راهنمای hover، قابل ترکیب با CSS و JS برای تجربه کاربری داینامیک.</div>
+</div>
+<div class="keyword" data-category="html">33. TOWAI-avatar
+  <div class="description">تصویر پروفایل یا نمایه کاربر، قابل استایل با CSS و تعامل با JS برای نمایش اطلاعات بیشتر.</div>
+</div>
+<div class="keyword" data-category="html">34. TOWAI-badge-count
+  <div class="description">نشانگر عددی روی آیکون‌ها برای notifications، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">35. TOWAI-stepper
+  <div class="description">نمایش مراحل فرآیند یا wizard progression، قابل استایل با CSS و مدیریت با JS.</div>
+</div>
+<div class="keyword" data-category="html">36. TOWAI-table
+  <div class="description">جدول داده با قابلیت sortable و filterable، قابل استایل و تعامل با JS برای UX بهتر.</div>
+</div>
+<div class="keyword" data-category="html">37. TOWAI-thead
+  <div class="description">بخش سر جدول شامل header cells، قابل استایل و مدیریت با JS.</div>
+</div>
+<div class="keyword" data-category="html">38. TOWAI-tbody
+  <div class="description">بخش بدنه جدول برای داده‌ها، قابل استایل با CSS و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">39. TOWAI-tr
+  <div class="description">ردیف جدول برای نمایش رکوردهای داده، قابل استایل و انتخاب با JS.</div>
+</div>
+<div class="keyword" data-category="html">40. TOWAI-td
+  <div class="description">سلول جدول برای مقدار داده، قابل استایل و تعامل با JS برای تغییر داینامیک محتوا.</div>
+</div>
+<div class="keyword" data-category="html">41. TOWAI-th
+  <div class="description">سلول header جدول، قابل استایل و sortable با JS.</div>
+</div>
+<div class="keyword" data-category="html">42. TOWAI-caption
+  <div class="description">توضیح جدول یا عنوان مرتبط با محتوا، قابل استایل با CSS.</div>
+</div>
+<div class="keyword" data-category="html">43. TOWAI-list
+  <div class="description">لیست مرتب یا نامرتب برای آیتم‌ها، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">44. TOWAI-li
+  <div class="description">آیتم لیست داخل TOWAI-list، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">45. TOWAI-icon-button
+  <div class="description">دکمه حاوی آیکون با hover effect، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">46. TOWAI-card-header
+  <div class="description">بخش بالایی کارت برای عنوان یا تصویر، قابل استایل با CSS و ترکیب با JS.</div>
+</div>
+<div class="keyword" data-category="html">47. TOWAI-card-body
+  <div class="description">بخش اصلی کارت برای متن و محتوا، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">48. TOWAI-card-footer
+  <div class="description">پایین کارت برای actions یا لینک‌ها، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">49. TOWAI-image
+  <div class="description">Placeholder برای تصاویر با alt text و lazy load، قابل استایل و مدیریت با JS.</div>
+</div>
+<div class="keyword" data-category="html">50. TOWAI-video
+  <div class="description">نمایش ویدئو با کنترل پخش و pause، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">51. TOWAI-accordion-header
+  <div class="description">سرفصل آیتم accordion که با کلیک، محتوای مربوطه را باز یا بسته می‌کند، قابل استایل و مدیریت با JS.</div>
+</div>
+<div class="keyword" data-category="html">52. TOWAI-accordion-body
+  <div class="description">محتوای داخلی آیتم accordion، شامل متن، لینک یا فرم، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">53. TOWAI-accordion-item
+  <div class="description">آیتم کامل accordion شامل header و body، قابل ترکیب با CSS و JS برای animation smooth.</div>
+</div>
+<div class="keyword" data-category="html">54. TOWAI-tab-header
+  <div class="description">بخش بالایی تب‌ها شامل عنوان‌ها و active state، قابل استایل و مدیریت با JS.</div>
+</div>
+<div class="keyword" data-category="html">55. TOWAI-tab-content
+  <div class="description">محتوای مرتبط با تب فعال، قابل استایل و داینامیک با JS برای تغییر تب.</div>
+</div>
+<div class="keyword" data-category="html">56. TOWAI-tab-item
+  <div class="description">تب منفرد با active/inactive state، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">57. TOWAI-progress-bar
+  <div class="description">نوار پیشرفت وظایف یا بارگذاری، قابل استایل با CSS و update داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">58. TOWAI-progress-fill
+  <div class="description">بخش پر شده نوار پیشرفت، قابل استایل و update درصد با JS.</div>
+</div>
+<div class="keyword" data-category="html">59. TOWAI-spinner-wrapper
+  <div class="description">container برای loader animation، قابل استایل با CSS و مدیریت نمایش با JS.</div>
+</div>
+<div class="keyword" data-category="html">60. TOWAI-spinner-item
+  <div class="description">عنصر داخلی spinner، شامل animation CSS و control با JS.</div>
+</div>
+<div class="keyword" data-category="html">61. TOWAI-alert-success
+  <div class="description">پیام موفقیت برای اطلاع‌رسانی کاربر، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">62. TOWAI-alert-warning
+  <div class="description">پیام هشدار برای action یا خطاهای احتمالی، قابل استایل و مدیریت با JS.</div>
+</div>
+<div class="keyword" data-category="html">63. TOWAI-alert-error
+  <div class="description">پیام خطای جدی با رنگ و icon مناسب، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">64. TOWAI-toast-container
+  <div class="description">container برای نمایش toast messages در صفحه، قابل استایل و مدیریت با JS.</div>
+</div>
+<div class="keyword" data-category="html">65. TOWAI-toast-item
+  <div class="description">toast منفرد با timeout و auto-dismiss، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">66. TOWAI-avatar-wrapper
+  <div class="description">container تصویر پروفایل یا کاربر، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">67. TOWAI-avatar-image
+  <div class="description">تصویر اصلی avatar با round shape و hover effect، قابل استایل و JS interaction.</div>
+</div>
+<div class="keyword" data-category="html">68. TOWAI-badge-wrapper
+  <div class="description">container برای badges یا notification count، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">69. TOWAI-badge-text
+  <div class="description">متن داخل badge برای نمایش عدد یا status، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">70. TOWAI-stepper-container
+  <div class="description">container مراحل پروسه یا wizard، قابل استایل و مدیریت مرحله فعال با JS.</div>
+</div>
+<div class="keyword" data-category="html">71. TOWAI-stepper-item
+  <div class="description">آیتم مرحله شامل شماره و title، قابل استایل و کنترل با JS برای wizard progression.</div>
+</div>
+<div class="keyword" data-category="html">72. TOWAI-stepper-active
+  <div class="description">حالت فعال مرحله در stepper، قابل استایل با رنگ و animation CSS و JS.</div>
+</div>
+<div class="keyword" data-category="html">73. TOWAI-table-header
+  <div class="description">بخش بالای جدول با column titles و sort icons، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">74. TOWAI-table-row
+  <div class="description">ردیف داده در جدول، قابل hover، انتخاب و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">75. TOWAI-table-cell
+  <div class="description">سلول جدول با داده متنی یا عددی، قابل استایل و تغییر داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">76. TOWAI-table-footer
+  <div class="description">پایین جدول برای summary یا pagination، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">77. TOWAI-table-sort-icon
+  <div class="description">آیکون مرتب‌سازی ستون جدول، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">78. TOWAI-list-group
+  <div class="description">گروهی از آیتم‌های لیست، مرتب یا نامرتب، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">79. TOWAI-list-item
+  <div class="description">آیتم منفرد لیست با icon یا action، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">80. TOWAI-list-action
+  <div class="description">دکمه یا link برای هر آیتم لیست، قابل استایل و مدیریت action با JS.</div>
+</div>
+<div class="keyword" data-category="html">81. TOWAI-lightbox
+  <div class="description">نمایش تصاویر یا ویدئوها در پنجره overlay با امکان navigation و zoom، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">82. TOWAI-lightbox-image
+  <div class="description">تصویر منفرد داخل lightbox، با lazy load و alt text، قابل استایل و interaction با JS.</div>
+</div>
+<div class="keyword" data-category="html">83. TOWAI-lightbox-caption
+  <div class="description">توضیح یا caption زیر تصویر داخل lightbox، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">84. TOWAI-lightbox-prev
+  <div class="description">دکمه رفتن به تصویر قبلی داخل lightbox، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">85. TOWAI-lightbox-next
+  <div class="description">دکمه رفتن به تصویر بعدی داخل lightbox، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">86. TOWAI-lightbox-close
+  <div class="description">دکمه بستن lightbox، قابل استایل و مدیریت نمایش با JS.</div>
+</div>
+<div class="keyword" data-category="html">87. TOWAI-gallery
+  <div class="description">گالری تصاویر با grid یا carousel، قابل استایل و navigation با JS.</div>
+</div>
+<div class="keyword" data-category="html">88. TOWAI-gallery-item
+  <div class="description">آیتم منفرد گالری شامل تصویر و caption، قابل استایل و interaction با JS.</div>
+</div>
+<div class="keyword" data-category="html">89. TOWAI-gallery-filter
+  <div class="description">فیلتر آیتم‌های گالری بر اساس category یا tag، قابل کنترل با JS و استایل با CSS.</div>
+</div>
+<div class="keyword" data-category="html">90. TOWAI-gallery-sort
+  <div class="description">مرتب‌سازی آیتم‌های گالری بر اساس تاریخ، نام یا priority، قابل استایل و JS.</div>
+</div>
+<div class="keyword" data-category="html">91. TOWAI-card-hover
+  <div class="description">افکت hover روی کارت‌ها برای برجسته کردن محتوا، قابل استایل با CSS و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">92. TOWAI-card-flip
+  <div class="description">چرخش کارت برای نمایش محتوای پشت، قابل استایل و انیمیشن با CSS و JS.</div>
+</div>
+<div class="keyword" data-category="html">93. TOWAI-card-shadow
+  <div class="description">سایه کارت برای برجسته کردن عناصر UI، قابل استایل و ترکیب با hover یا animation با JS.</div>
+</div>
+<div class="keyword" data-category="html">94. TOWAI-card-badge
+  <div class="description">نشان روی کارت برای status یا highlight، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">95. TOWAI-button-group
+  <div class="description">گروه دکمه‌ها با alignment و spacing مناسب، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">96. TOWAI-icon-button
+  <div class="description">دکمه حاوی آیکون برای action یا navigation، قابل استایل و JS interaction.</div>
+</div>
+<div class="keyword" data-category="html">97. TOWAI-toggle-button
+  <div class="description">دکمه سوئیچ برای فعال/غیرفعال کردن ویژگی، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">98. TOWAI-dropdown-menu
+  <div class="description">منوی کشویی با چند گزینه، قابل استایل و مدیریت نمایش با JS.</div>
+</div>
+<div class="keyword" data-category="html">99. TOWAI-dropdown-item
+  <div class="description">گزینه منفرد داخل dropdown، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">100. TOWAI-form-inline
+  <div class="description">فرم با فیلدها و دکمه‌ها کنار هم، مناسب search یا filter، قابل استایل و JS validation.</div>
+</div>
+<div class="keyword" data-category="html">101. TOWAI-form-floating-label
+  <div class="description">Label شناور روی input هنگام تایپ کاربر، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">102. TOWAI-form-group
+  <div class="description">گروه فیلدها داخل فرم برای layout و validation آسان، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">103. TOWAI-input-text
+  <div class="description">فیلد متنی برای ورود داده کاربر، قابل validation و استایل با CSS و JS.</div>
+</div>
+<div class="keyword" data-category="html">104. TOWAI-input-password
+  <div class="description">فیلد password با toggle نمایش/مخفی کردن، قابل استایل و مدیریت با JS.</div>
+</div>
+<div class="keyword" data-category="html">105. TOWAI-input-number
+  <div class="description">فیلد ورودی عددی با کنترل min/max، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">106. TOWAI-input-email
+  <div class="description">فیلد ورود ایمیل با validation، قابل استایل و مدیریت با JS.</div>
+</div>
+<div class="keyword" data-category="html">107. TOWAI-textarea
+  <div class="description">فیلد چندخطی برای متن طولانی، قابل استایل و validation با CSS و JS.</div>
+</div>
+<div class="keyword" data-category="html">108. TOWAI-select
+  <div class="description">منوی کشویی انتخاب گزینه‌ها، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">109. TOWAI-option
+  <div class="description">گزینه منفرد داخل select، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">110. TOWAI-checkbox
+  <div class="description">چک‌باکس برای انتخاب چندگانه، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">111. TOWAI-radio
+  <div class="description">رادیو برای انتخاب تنها یک گزینه، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">112. TOWAI-switch
+  <div class="description">سوئیچ toggle برای حالت on/off، قابل استایل و مدیریت با JS.</div>
+</div>
+<div class="keyword" data-category="html">113. TOWAI-range-slider
+  <div class="description">نوار کشویی برای انتخاب مقدار عددی، قابل استایل و update داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">114. TOWAI-progress-step
+  <div class="description">مرحله منفرد در progress یا wizard، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">115. TOWAI-progress-complete
+  <div class="description">مرحله کامل شده در progress، قابل استایل و highlight با CSS و JS.</div>
+</div>
+<div class="keyword" data-category="html">116. TOWAI-progress-pending
+  <div class="description">مرحله در انتظار انجام در progress، قابل استایل و مدیریت با JS.</div>
+</div>
+<div class="keyword" data-category="html">117. TOWAI-pagination
+  <div class="description">کنترل صفحات داده یا content، شامل prev/next و page numbers، قابل استایل و JS interaction.</div>
+</div>
+<div class="keyword" data-category="html">118. TOWAI-pagination-prev
+  <div class="description">دکمه رفتن به صفحه قبلی در pagination، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">119. TOWAI-pagination-next
+  <div class="description">دکمه رفتن به صفحه بعدی در pagination، قابل استایل و JS interaction.</div>
+</div>
+<div class="keyword" data-category="html">120. TOWAI-pagination-current
+  <div class="description">نمایشگر صفحه جاری در pagination، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">121. TOWAI-breadcrumb
+  <div class="description">مسیر ناوبری صفحات با نمایش hierarchy، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">122. TOWAI-breadcrumb-item
+  <div class="description">آیتم منفرد breadcrumb برای navigation، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">123. TOWAI-breadcrumb-separator
+  <div class="description">جداکننده بین آیتم‌های breadcrumb، قابل استایل با CSS.</div>
+</div>
+<div class="keyword" data-category="html">124. TOWAI-overlay
+  <div class="description">لایه پوششی برای modal یا lightbox، قابل استایل و مدیریت نمایش با JS.</div>
+</div>
+<div class="keyword" data-category="html">125. TOWAI-overlay-backdrop
+  <div class="description">پس‌زمینه نیمه شفاف برای modal یا popup، قابل استایل و JS interaction.</div>
+</div>
+<div class="keyword" data-category="html">126. TOWAI-modal-header
+  <div class="description">بخش بالایی modal شامل title و close button، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">127. TOWAI-modal-body
+  <div class="description">محتوای اصلی modal شامل متن، فرم یا media، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">128. TOWAI-modal-footer
+  <div class="description">بخش پایین modal برای دکمه‌ها یا actions، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">129. TOWAI-modal-close
+  <div class="description">دکمه بستن modal، قابل استایل و مدیریت با JS.</div>
+</div>
+<div class="keyword" data-category="html">130. TOWAI-tooltip-inner
+  <div class="description">محتوای اصلی tooltip، شامل متن یا icon، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">131. TOWAI-tooltip-arrow
+  <div class="description">فلش یا pointer tooltip برای نشان دادن موقعیت مرتبط با عنصر، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">132. TOWAI-tooltip-trigger
+  <div class="description">عنصر فعال‌کننده نمایش tooltip روی hover یا focus، قابل کنترل با JS و استایل CSS.</div>
+</div>
+<div class="keyword" data-category="html">133. TOWAI-menu
+  <div class="description">منوی اصلی یا context menu شامل گزینه‌ها، قابل استایل و مدیریت با JS.</div>
+</div>
+<div class="keyword" data-category="html">134. TOWAI-menu-item
+  <div class="description">گزینه منفرد منو برای action یا navigation، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">135. TOWAI-menu-divider
+  <div class="description">خط جداکننده بین آیتم‌های منو، قابل استایل با CSS.</div>
+</div>
+<div class="keyword" data-category="html">136. TOWAI-menu-icon
+  <div class="description">آیکون کنار آیتم منو برای hint یا action، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">137. TOWAI-navbar
+  <div class="description">ناوبری بالای صفحه شامل لوگو و منوها، قابل استایل و مدیریت با JS.</div>
+</div>
+<div class="keyword" data-category="html">138. TOWAI-navbar-brand
+  <div class="description">لوگو یا نام برند در navbar، قابل استایل و لینک به صفحه اصلی.</div>
+</div>
+<div class="keyword" data-category="html">139. TOWAI-navbar-item
+  <div class="description">آیتم منفرد در navbar برای لینک یا action، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">140. TOWAI-navbar-toggle
+  <div class="description">دکمه تغییر حالت نمایش منوی navbar در موبایل یا responsive، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">141. TOWAI-footer
+  <div class="description">پایین صفحه شامل لینک‌ها و اطلاعات، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">142. TOWAI-footer-link
+  <div class="description">لینک منفرد در footer برای navigation یا اطلاعات، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">143. TOWAI-footer-text
+  <div class="description">متن توضیحی یا کپی‌رایت در footer، قابل استایل با CSS.</div>
+</div>
+<div class="keyword" data-category="html">144. TOWAI-card
+  <div class="description">کارت محتوایی برای نمایش متن، تصویر یا media، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">145. TOWAI-card-header
+  <div class="description">بخش بالایی کارت شامل title یا icon، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">146. TOWAI-card-body
+  <div class="description">محتوای اصلی کارت شامل متن، عکس یا فرم، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">147. TOWAI-card-footer
+  <div class="description">پایین کارت شامل دکمه‌ها یا لینک‌ها، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">148. TOWAI-badge
+  <div class="description">نشان کوچک برای highlight یا notification، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">149. TOWAI-badge-pill
+  <div class="description">badge با گوشه‌های گرد برای ظاهر متفاوت، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">150. TOWAI-icon
+  <div class="description">نماد گرافیکی برای action یا status، قابل استایل و ترکیب با JS.</div>
+</div>
+<div class="keyword" data-category="html">151. TOWAI-icon-large
+  <div class="description">آیکون بزرگ برای emphasis، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">152. TOWAI-icon-small
+  <div class="description">آیکون کوچک برای inline یا inline-action، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">153. TOWAI-breadcrumb
+  <div class="description">مسیر ناوبری صفحات با نمایش hierarchy، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">154. TOWAI-breadcrumb-item
+  <div class="description">آیتم منفرد breadcrumb برای navigation، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">155. TOWAI-breadcrumb-separator
+  <div class="description">جداکننده بین آیتم‌های breadcrumb، قابل استایل با CSS.</div>
+</div>
+<div class="keyword" data-category="html">156. TOWAI-badge-status
+  <div class="description">badge نشانگر وضعیت آنلاین/آفلاین یا activity، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">157. TOWAI-alert-dismissible
+  <div class="description">پیام هشدار که قابل بستن توسط کاربر است، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">158. TOWAI-alert-icon
+  <div class="description">آیکون هشدار داخل alert برای تاکید، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">159. TOWAI-spinner-border
+  <div class="description">animation spinner با border، مناسب loading، قابل استایل و مدیریت با JS.</div>
+</div>
+<div class="keyword" data-category="html">160. TOWAI-spinner-grow
+  <div class="description">animation spinner با effect رشد، مناسب loading، قابل استایل و JS interaction.</div>
+</div>
+<div class="keyword" data-category="html">161. TOWAI-tooltip
+  <div class="description">نمایش متن راهنما روی hover یا focus، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">162. TOWAI-tooltip-position
+  <div class="description">موقعیت tooltip نسبت به عنصر، قابل کنترل با CSS و JS.</div>
+</div>
+<div class="keyword" data-category="html">163. TOWAI-tooltip-delay
+  <div class="description">تاخیر نمایش tooltip روی hover، قابل مدیریت با JS و CSS.</div>
+</div>
+<div class="keyword" data-category="html">164. TOWAI-popover
+  <div class="description">پنجره کوچک popup برای info یا action، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">165. TOWAI-popover-header
+  <div class="description">بخش بالایی popover شامل title، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">166. TOWAI-popover-body
+  <div class="description">محتوای اصلی popover، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">167. TOWAI-popover-footer
+  <div class="description">بخش پایینی popover شامل دکمه‌ها یا link‌ها، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">168. TOWAI-tab
+  <div class="description">تغییر بین بخش‌های محتوا بدون reload صفحه، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">169. TOWAI-tab-list
+  <div class="description">لیست تب‌ها، قابل استایل و مدیریت active state با JS.</div>
+</div>
+<div class="keyword" data-category="html">170. TOWAI-tab-panel
+  <div class="description">محتوای مرتبط با تب فعال، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">171. TOWAI-tooltip-trigger
+  <div class="description">عنصر فعال‌کننده نمایش tooltip، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">172. TOWAI-tooltip-content
+  <div class="description">محتوای اصلی tooltip شامل متن یا icon، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">173. TOWAI-tooltip-hover
+  <div class="description">نمایش tooltip هنگام hover، قابل کنترل با CSS و JS.</div>
+</div>
+<div class="keyword" data-category="html">174. TOWAI-dropdown
+  <div class="description">منوی کشویی شامل گزینه‌ها، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">175. TOWAI-dropdown-toggle
+  <div class="description">عنصر فعال‌کننده نمایش dropdown، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">176. TOWAI-dropdown-menu
+  <div class="description">لیست گزینه‌های dropdown، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">177. TOWAI-dropdown-item
+  <div class="description">گزینه منفرد داخل dropdown، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">178. TOWAI-dropdown-divider
+  <div class="description">خط جداکننده بین آیتم‌های dropdown، قابل استایل با CSS.</div>
+</div>
+<div class="keyword" data-category="html">179. TOWAI-card-img
+  <div class="description">تصویر داخل کارت، قابل استایل و داینامیک با CSS و JS.</div>
+</div>
+<div class="keyword" data-category="html">180. TOWAI-card-link
+  <div class="description">لینک یا action داخل کارت، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">181. TOWAI-alert-banner
+  <div class="description">نوار اطلاع‌رسانی بالا صفحه برای هشدار یا پیام، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">182. TOWAI-alert-banner-close
+  <div class="description">دکمه بستن alert-banner، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">183. TOWAI-card-overlay
+  <div class="description">لایه overlay روی کارت برای نمایش اطلاعات اضافی یا action، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">184. TOWAI-card-badge
+  <div class="description">badge یا نشان روی کارت برای highlight، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">185. TOWAI-modal-backdrop
+  <div class="description">پس‌زمینه نیمه شفاف برای modal، قابل استایل و مدیریت نمایش با JS.</div>
+</div>
+<div class="keyword" data-category="html">186. TOWAI-modal-header-title
+  <div class="description">عنوان بالای modal، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">187. TOWAI-modal-close-button
+  <div class="description">دکمه بستن modal، قابل استایل و مدیریت JS.</div>
+</div>
+<div class="keyword" data-category="html">188. TOWAI-form-error
+  <div class="description">نمایش خطا در فرم هنگام validation، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class"keyword" data-category="html">189. TOWAI-form-success
+  <div class="description">نمایش پیام موفقیت بعد از submit فرم، قابل استایل و مدیریت JS.</div>
+</div>
+<div class="keyword" data-category="html">190. TOWAI-tooltip-animation
+  <div class="description">افکت نمایش tooltip شامل fade یا slide، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">191. TOWAI-badge-new
+  <div class="description">badge برای نمایش محتوای جدید یا تازه، قابل استایل و JS interaction.</div>
+</div>
+<div class="keyword" data-category="html">192. TOWAI-badge-hot
+  <div class="description">badge برای محتوای داغ یا محبوب، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">193. TOWAI-badge-sale
+  <div class="description">badge برای نمایش تخفیف یا فروش ویژه، قابل استایل و مدیریت JS.</div>
+</div>
+<div class="keyword" data-category="html">194. TOWAI-pagination-first
+  <div class="description">دکمه رفتن به صفحه اول در pagination، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">195. TOWAI-pagination-last
+  <div class="description">دکمه رفتن به صفحه آخر در pagination، قابل استایل و تعامل با JS.</div>
+</div>
+<div class="keyword" data-category="html">196. TOWAI-carousel
+  <div class="description">اسلایدر تصاویر یا content با navigation، قابل استایل و مدیریت با JS.</div>
+</div>
+<div class="keyword" data-category="html">197. TOWAI-carousel-item
+  <div class="description">آیتم منفرد اسلایدر، شامل تصویر یا متن، قابل استایل و کنترل با JS.</div>
+</div>
+<div class="keyword" data-category="html">198. TOWAI-carousel-indicator
+  <div class="description">نشانگر وضعیت اسلایدر، قابل استایل و داینامیک با JS.</div>
+</div>
+<div class="keyword" data-category="html">199. TOWAI-carousel-control-prev
+  <div class="description">دکمه حرکت به اسلاید قبلی، قابل استایل و مدیریت JS.</div>
+</div>
+<div class="keyword" data-category="html">200. TOWAI-carousel-control-next
+  <div class="description">دکمه حرکت به اسلاید بعدی، قابل استایل و تعامل با JS.</div>
+</div>
+
+
+  <!-- CSS (12) -->
+  <div class="keyword" data-category="css">flex<div class="description">روش layout انعطاف‌پذیر. کنترل alignment، direction و spacing عناصر. پایه طراحی responsive و dynamic UI.</div></div>
+  <div class="keyword" data-category="css">grid<div class="description">سیستم شبکه‌ای برای layout پیچیده. Rows, columns, gap و alignment دقیق. مناسب طراحی مدرن و dashboardها.</div></div>
+  <div class="keyword" data-category="css">position<div class="description">کنترل مکان عناصر: static, relative, absolute, fixed, sticky. پایه طراحی UI، modal و overlayها.</div></div>
+  <div class="keyword" data-category="css">z-index<div class="description">ترتیب عناصر روی هم. برای modal، popup و dropdown menus کاربرد دارد. تنها برای elements با position غیرstatic معتبر است.</div></div>
+  <div class="keyword" data-category="css">transform<div class="description">اعمال rotate، scale، translate و skew روی عناصر. Animation و hover effects حرفه‌ای با transform انجام می‌شود.</div></div>
+  <div class="keyword" data-category="css">transition<div class="description">تغییر smooth properties مثل color، transform، opacity بدون JS. پایه انیمیشن‌های CSS برای UI زیبا.</div></div>
+  <div class="keyword" data-category="css">animation<div class="description">تعریف keyframes و حرکات پیچیده. کاربرد در loading animations، neon glow و interactive UI components.</div></div>
+  <div class="keyword" data-category="css">media queries<div class="description">طراحی responsive. تغییر layout و style بر اساس screen width، height یا orientation. پایه موبایل فرندلی.</div></div>
+  <div class="keyword" data-category="css">variables<div class="description">تعریف CSS custom properties: --primary-color. ساده کردن maintenance و themeing و تغییر سریع style.</div></div>
+  <div class="keyword" data-category="css">pseudo-classes<div class="description">:hover, :active, :focus, :nth-child(). برای styleهای تعاملی و انتخاب عناصر خاص بدون JS کاربرد دارد.</div></div>
+  <div class="keyword" data-category="css">pseudo-elements<div class="description">::before, ::after, ::first-letter. برای تزئینات و content اضافه بدون HTML اضافی استفاده می‌شود.</div></div>
+  <div class="keyword" data-category="css">box-shadow<div class="description">افکت سایه برای depth، neumorphism، neon glow یا card effects. به طراحی مدرن و جذاب کمک می‌کند.</div></div>
+<div class="keyword" data-category="css">1. TOWAI-flex
+  <div class="description">استفاده از flexbox برای layout انعطاف‌پذیر، مدیریت جهت و alignment عناصر.</div>
+</div>
+<div class="keyword" data-category="css">2. TOWAI-flex-center
+  <div class="description">مرکز چینش عناصر در flex container به صورت عمودی و افقی.</div>
+</div>
+<div class="keyword" data-category="css">3. TOWAI-flex-column
+  <div class="description">چینش عناصر در flex container به صورت ستون عمودی.</div>
+</div>
+<div class="keyword" data-category="css">4. TOWAI-flex-row
+  <div class="description">چینش عناصر در flex container به صورت ردیف افقی.</div>
+</div>
+<div class="keyword" data-category="css">5. TOWAI-grid
+  <div class="description">استفاده از CSS Grid برای layout پیشرفته با ردیف‌ها و ستون‌ها.</div>
+</div>
+<div class="keyword" data-category="css">6. TOWAI-grid-gap
+  <div class="description">تنظیم فاصله بین سلول‌های grid با row-gap و column-gap.</div>
+</div>
+<div class="keyword" data-category="css">7. TOWAI-grid-template
+  <div class="description">تعریف template ردیف‌ها و ستون‌های grid برای طراحی layout دقیق.</div>
+</div>
+<div class="keyword" data-category="css">8. TOWAI-position
+  <div class="description">مدیریت موقعیت عناصر با relative, absolute, fixed و sticky.</div>
+</div>
+<div class="keyword" data-category="css">9. TOWAI-zindex
+  <div class="description">کنترل عمق نمایش عناصر برای overlay یا modal و stack order.</div>
+</div>
+<div class="keyword" data-category="css">10. TOWAI-display
+  <div class="description">تعریف نحوه نمایش عنصر: block, inline, inline-block, flex, grid و none.</div>
+</div>
+<div class="keyword" data-category="css">11. TOWAI-width
+  <div class="description">تنظیم عرض عناصر با واحدهای px, %, rem, vw و غیره.</div>
+</div>
+<div class="keyword" data-category="css">12. TOWAI-height
+  <div class="description">تنظیم ارتفاع عناصر با واحدهای px, %, rem, vh و غیره.</div>
+</div>
+<div class="keyword" data-category="css">13. TOWAI-max-width
+  <div class="description">تنظیم حداکثر عرض عنصر برای responsive design.</div>
+</div>
+<div class="keyword" data-category="css">14. TOWAI-min-width
+  <div class="description">تنظیم حداقل عرض عنصر برای کنترل resize و responsiveness.</div>
+</div>
+<div class="keyword" data-category="css">15. TOWAI-max-height
+  <div class="description">تنظیم حداکثر ارتفاع عنصر برای layout و overflow کنترل شده.</div>
+</div>
+<div class="keyword" data-category="css">16. TOWAI-min-height
+  <div class="description">تنظیم حداقل ارتفاع عنصر برای کنترل سازگاری با محتوای داخلی.</div>
+</div>
+<div class="keyword" data-category="css">17. TOWAI-margin
+  <div class="description">فاصله بیرونی عنصر نسبت به عناصر اطراف.</div>
+</div>
+<div class="keyword" data-category="css">18. TOWAI-margin-auto
+  <div class="description">مرکز چینش عنصر با margin auto در layout block یا flex.</div>
+</div>
+<div class="keyword" data-category="css">19. TOWAI-padding
+  <div class="description">فاصله داخلی عنصر برای ایجاد فاصله بین محتوا و حاشیه‌ها.</div>
+</div>
+<div class="keyword" data-category="css">20. TOWAI-border
+  <div class="description">تعریف حاشیه عنصر شامل ضخامت، سبک و رنگ border.</div>
+</div>
+<div class="keyword" data-category="css">21. TOWAI-border-radius
+  <div class="description">گرد کردن گوشه‌های عنصر برای افکت‌های مدرن و کارت‌ها.</div>
+</div>
+<div class="keyword" data-category="css">22. TOWAI-border-top
+  <div class="description">تنظیم حاشیه بالای عنصر به صورت مستقل از سایر طرف‌ها.</div>
+</div>
+<div class="keyword" data-category="css">23. TOWAI-border-right
+  <div class="description">تنظیم حاشیه راست عنصر به صورت مستقل.</div>
+</div>
+<div class="keyword" data-category="css">24. TOWAI-border-bottom
+  <div class="description">تنظیم حاشیه پایین عنصر به صورت مستقل.</div>
+</div>
+<div class="keyword" data-category="css">25. TOWAI-border-left
+  <div class="description">تنظیم حاشیه چپ عنصر به صورت مستقل.</div>
+</div>
+<div class="keyword" data-category="css">26. TOWAI-box-shadow
+  <div class="description">افکت سایه برای عمق دادن به عناصر، hover effect و UI card.</div>
+</div>
+<div class="keyword" data-category="css">27. TOWAI-text-shadow
+  <div class="description">افکت سایه روی متن برای تاکید یا جلوه‌های نئونی.</div>
+</div>
+<div class="keyword" data-category="css">28. TOWAI-background
+  <div class="description">تنظیم رنگ، تصویر یا gradient پس‌زمینه عنصر.</div>
+</div>
+<div class="keyword" data-category="css">29. TOWAI-background-color
+  <div class="description">تنظیم رنگ پس‌زمینه عنصر به صورت مستقیم یا با متغیر CSS.</div>
+</div>
+<div class="keyword" data-category="css">30. TOWAI-background-image
+  <div class="description">قرار دادن تصویر به عنوان پس‌زمینه با repeat, cover یا contain.</div>
+</div>
+<div class="keyword" data-category="css">31. TOWAI-background-size
+  <div class="description">کنترل اندازه پس‌زمینه تصویر با cover, contain یا مقادیر px/%.</div>
+</div>
+<div class="keyword" data-category="css">32. TOWAI-background-position
+  <div class="description">تنظیم موقعیت پس‌زمینه تصویر نسبت به عنصر.</div>
+</div>
+<div class="keyword" data-category="css">33. TOWAI-background-repeat
+  <div class="description">کنترل تکرار تصویر پس‌زمینه: repeat, no-repeat, repeat-x/y.</div>
+</div>
+<div class="keyword" data-category="css">34. TOWAI-opacity
+  <div class="description">شفافیت عنصر با مقادیر 0 تا 1 برای جلوه‌های مدرن.</div>
+</div>
+<div class="keyword" data-category="css">35. TOWAI-transition
+  <div class="description">افکت‌های نرم تغییر مقادیر CSS هنگام hover یا state change.</div>
+</div>
+<div class="keyword" data-category="css">36. TOWAI-transform
+  <div class="description">تغییر موقعیت، چرخش، مقیاس یا skew عنصر برای animation و interaction.</div>
+</div>
+<div class="keyword" data-category="css">37. TOWAI-transform-scale
+  <div class="description">تغییر اندازه عنصر به صورت proportional با scale(x, y).</div>
+</div>
+<div class="keyword" data-category="css">38. TOWAI-transform-rotate
+  <div class="description">چرخش عنصر با زاویه مشخص، مناسب animation و hover effect.</div>
+</div>
+<div class="keyword" data-category="css">39. TOWAI-transform-translate
+  <div class="description">جابجایی عنصر در محور X/Y برای افکت حرکت یا slide.</div>
+</div>
+<div class="keyword" data-category="css">40. TOWAI-transform-skew
+  <div class="description">شیب دادن عنصر برای جلوه‌های دینامیک و نئونی.</div>
+</div>
+<div class="keyword" data-category="css">41. TOWAI-animation
+  <div class="description">تعریف keyframe animation برای عناصر با تکرار، duration و timing.</div>
+</div>
+<div class="keyword" data-category="css">42. TOWAI-keyframes
+  <div class="description">تعریف مراحل keyframe برای animation عناصر.</div>
+</div>
+<div class="keyword" data-category="css">43. TOWAI-font-size
+  <div class="description">اندازه فونت متن با px, rem, em و unit های responsive.</div>
+</div>
+<div class="keyword" data-category="css">44. TOWAI-font-family
+  <div class="description">انتخاب نوع فونت برای متن، قابل ترکیب با Google Fonts یا custom fonts.</div>
+</div>
+<div class="keyword" data-category="css">45. TOWAI-font-weight
+  <div class="description">ضخامت فونت متن، شامل normal, bold, bolder یا عددی.</div>
+</div>
+<div class="keyword" data-category="css">46. TOWAI-font-style
+  <div class="description">حالت فونت: normal, italic یا oblique.</div>
+</div>
+<div class="keyword" data-category="css">47. TOWAI-letter-spacing
+  <div class="description">فاصله بین حروف متن برای readability یا جلوه‌های خاص.</div>
+</div>
+<div class="keyword" data-category="css">48. TOWAI-line-height
+  <div class="description">ارتفاع خطوط متن برای خوانایی و alignment بهتر در UI.</div>
+</div>
+<div class="keyword" data-category="css">49. TOWAI-text-align
+  <div class="description">تراز متن: left, right, center, justify.</div>
+</div>
+<div class="keyword" data-category="css">50. TOWAI-text-transform
+  <div class="description">تبدیل متن به uppercase, lowercase یا capitalize برای طراحی consistent.</div>
+</div>
+<div class="keyword" data-category="css">51. TOWAI-color
+  <div class="description">تنظیم رنگ متن، شامل hex, rgb, hsl یا متغیرهای CSS.</div>
+</div>
+<div class="keyword" data-category="css">52. TOWAI-background-gradient
+  <div class="description">تعریف gradient خطی یا شعاعی برای پس‌زمینه عناصر.</div>
+</div>
+<div class="keyword" data-category="css">53. TOWAI-hover
+  <div class="description">حالت عنصر هنگام اشاره موس برای تغییر رنگ، سایه یا افکت.</div>
+</div>
+<div class="keyword" data-category="css">54. TOWAI-focus
+  <div class="description">حالت فعال عنصر هنگام focus، مناسب input و button.</div>
+</div>
+<div class="keyword" data-category="css">55. TOWAI-active
+  <div class="description">حالت فعال عنصر هنگام کلیک یا interaction.</div>
+</div>
+<div class="keyword" data-category="css">56. TOWAI-disabled
+  <div class="description">حالت غیر فعال عنصر، استایل متفاوت و interaction محدود.</div>
+</div>
+<div class="keyword" data-category="css">57. TOWAI-cursor
+  <div class="description">تغییر شکل نشانگر موس روی عنصر، شامل pointer, move, text و غیره.</div>
+</div>
+<div class="keyword" data-category="css">58. TOWAI-overflow
+  <div class="description">مدیریت نمایش محتوای اضافی: hidden, scroll, auto یا visible.</div>
+</div>
+<div class="keyword" data-category="css">59. TOWAI-overflow-x
+  <div class="description">مدیریت overflow در محور افقی.</div>
+</div>
+<div class="keyword" data-category="css">60. TOWAI-overflow-y
+  <div class="description">مدیریت overflow در محور عمودی.</div>
+</div>
+<div class="keyword" data-category="css">61. TOWAI-flex-wrap
+  <div class="description">اجازه wrap کردن عناصر در flex container برای responsive layout.</div>
+</div>
+<div class="keyword" data-category="css">62. TOWAI-justify-content
+  <div class="description">تنظیم تراز عناصر در محور اصلی flex container.</div>
+</div>
+<div class="keyword" data-category="css">63. TOWAI-align-items
+  <div class="description">تراز عناصر در محور عمودی یا cross axis در flex container.</div>
+</div>
+<div class="keyword" data-category="css">64. TOWAI-align-content
+  <div class="description">تراز چند خط از عناصر در flex یا grid container.</div>
+</div>
+<div class="keyword" data-category="css">65. TOWAI-align-self
+  <div class="description">تراز فردی عنصر نسبت به container، override align-items.</div>
+</div>
+<div class="keyword" data-category="css">66. TOWAI-gap
+  <div class="description">فاصله بین عناصر در flex یا grid، مشابه margin اما داخلی.</div>
+</div>
+<div class="keyword" data-category="css">67. TOWAI-column-gap
+  <div class="description">فاصله بین ستون‌ها در grid یا multicol layout.</div>
+</div>
+<div class="keyword" data-category="css">68. TOWAI-row-gap
+  <div class="description">فاصله بین ردیف‌ها در grid یا multicol layout.</div>
+</div>
+<div class="keyword" data-category="css">69. TOWAI-order
+  <div class="description">تعیین ترتیب نمایش عناصر در flex container بدون تغییر HTML.</div>
+</div>
+<div class="keyword" data-category="css">70. TOWAI-flex-grow
+  <div class="description">نسبت رشد عنصر در flex container نسبت به سایر عناصر.</div>
+</div>
+<div class="keyword" data-category="css">71. TOWAI-flex-shrink
+  <div class="description">نسبت کوچک شدن عنصر در flex container هنگام کمبود فضا.</div>
+</div>
+<div class="keyword" data-category="css">72. TOWAI-flex-basis
+  <div class="description">عرض اولیه عنصر قبل از اعمال grow یا shrink در flex.</div>
+</div>
+<div class="keyword" data-category="css">73. TOWAI-text-overflow
+  <div class="description">مدیریت متن اضافی: ellipsis یا clip برای overflow کنترل شده.</div>
+</div>
+<div class="keyword" data-category="css">74. TOWAI-white-space
+  <div class="description">کنترل رفتار خطوط متن: normal, nowrap, pre, pre-wrap و غیره.</div>
+</div>
+<div class="keyword" data-category="css">75. TOWAI-word-wrap
+  <div class="description">کنترل شکستن طولانی‌ترین کلمات برای جلوگیری از overflow.</div>
+</div>
+<div class="keyword" data-category="css">76. TOWAI-word-break
+  <div class="description">قواعد شکستن کلمات: normal, break-all, keep-all.</div>
+</div>
+<div class="keyword" data-category="css">77. TOWAI-text-decoration
+  <div class="description">خط زیر، روی یا strike-through متن، مناسب link و emphasis.</div>
+</div>
+<div class="keyword" data-category="css">78. TOWAI-text-decoration-color
+  <div class="description">رنگ خط زیر یا روی متن.</div>
+</div>
+<div class="keyword" data-category="css">79. TOWAI-text-decoration-style
+  <div class="description">سبک خط متن: solid, dotted, dashed, wavy.</div>
+</div>
+<div class="keyword" data-category="css">80. TOWAI-text-decoration-thickness
+  <div class="description">ضخامت خط زیر یا روی متن.</div>
+</div>
+<div class="keyword" data-category="css">81. TOWAI-box-sizing
+  <div class="description">تعریف نحوه محاسبه width و height: content-box یا border-box.</div>
+</div>
+<div class="keyword" data-category="css">82. TOWAI-object-fit
+  <div class="description">کنترل اندازه و نمایش تصاویر و ویدیو در container.</div>
+</div>
+<div class="keyword" data-category="css">83. TOWAI-object-position
+  <div class="description">تنظیم موقعیت تصویر یا ویدیو در container.</div>
+</div>
+<div class="keyword" data-category="css">84. TOWAI-list-style
+  <div class="description">نمایش لیست: none, disc, circle, square، یا custom image.</div>
+</div>
+<div class="keyword" data-category="css">85. TOWAI-list-style-type
+  <div class="description">تنظیم نوع marker لیست: decimal, roman, alpha، و غیره.</div>
+</div>
+<div class="keyword" data-category="css">86. TOWAI-list-style-position
+  <div class="description">مکان marker لیست: inside یا outside.</div>
+</div>
+<div class="keyword" data-category="css">87. TOWAI-outline
+  <div class="description">حاشیه بیرونی عنصر بدون تغییر layout، مناسب focus یا highlight.</div>
+</div>
+<div class="keyword" data-category="css">88. TOWAI-outline-color
+  <div class="description">رنگ حاشیه بیرونی عنصر.</div>
+</div>
+<div class="keyword" data-category="css">89. TOWAI-outline-style
+  <div class="description">سبک حاشیه بیرونی: solid, dashed, dotted.</div>
+</div>
+<div class="keyword" data-category="css">90. TOWAI-outline-width
+  <div class="description">ضخامت حاشیه بیرونی عنصر.</div>
+</div>
+<div class="keyword" data-category="css">91. TOWAI-transition-duration
+  <div class="description">مدت زمان افکت transition برای smooth animation.</div>
+</div>
+<div class="keyword" data-category="css">92. TOWAI-transition-timing-function
+  <div class="description">نوع easing برای transition: ease, linear, ease-in, ease-out.</div>
+</div>
+<div class="keyword" data-category="css">93. TOWAI-transition-delay
+  <div class="description">تاخیر شروع transition برای افکت‌های متوالی.</div>
+</div>
+<div class="keyword" data-category="css">94. TOWAI-filter
+  <div class="description">اعمال افکت‌های تصویری روی عنصر: blur, brightness, contrast و غیره.</div>
+</div>
+<div class="keyword" data-category="css">95. TOWAI-blur
+  <div class="description">ایجاد افکت تار شدن عناصر با filter: blur(px).</div>
+</div>
+<div class="keyword" data-category="css">96. TOWAI-brightness
+  <div class="description">تنظیم روشنایی عنصر با filter: brightness(%).</div>
+</div>
+<div class="keyword" data-category="css">97. TOWAI-contrast
+  <div class="description">تنظیم کنتراست عنصر با filter: contrast(%).</div>
+</div>
+<div class="keyword" data-category="css">98. TOWAI-hue-rotate
+  <div class="description">چرخش رنگ عناصر با filter: hue-rotate(deg) برای افکت‌های رنگی.</div>
+</div>
+<div class="keyword" data-category="css">99. TOWAI-saturate
+  <div class="description">تنظیم شدت رنگ عناصر با filter: saturate(%).</div>
+</div>
+<div class="keyword" data-category="css">100. TOWAI-grayscale
+  <div class="description">تبدیل رنگ عنصر به خاکستری با filter: grayscale(%).</div>
+</div>
+<div class="keyword" data-category="css">101. TOWAI-grayscale-hover
+  <div class="description">تغییر عنصر به حالت سیاه و سفید هنگام hover با filter: grayscale.</div>
+</div>
+<div class="keyword" data-category="css">102. TOWAI-opacity-hover
+  <div class="description">تغییر شفافیت عنصر هنگام hover برای افکت‌های مدرن.</div>
+</div>
+<div class="keyword" data-category="css">103. TOWAI-box-shadow-hover
+  <div class="description">اعمال سایه روی عنصر هنگام hover برای برجسته کردن یا تاکید.</div>
+</div>
+<div class="keyword" data-category="css">104. TOWAI-text-shadow-hover
+  <div class="description">اعمال سایه روی متن هنگام hover برای جلوه نئونی یا تاکید.</div>
+</div>
+<div class="keyword" data-category="css">105. TOWAI-border-hover
+  <div class="description">تغییر رنگ یا ضخامت حاشیه عنصر هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">106. TOWAI-transform-hover
+  <div class="description">اعمال transform مانند scale یا rotate هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">107. TOWAI-transition-hover
+  <div class="description">مدیریت smooth transition هنگام hover برای افکت‌های نرم.</div>
+</div>
+<div class="keyword" data-category="css">108. TOWAI-animation-hover
+  <div class="description">اعمال انیمیشن CSS هنگام hover یا تعامل کاربر.</div>
+</div>
+<div class="keyword" data-category="css">109. TOWAI-gradient-hover
+  <div class="description">تغییر gradient پس‌زمینه عنصر هنگام hover برای افکت جذاب.</div>
+</div>
+<div class="keyword" data-category="css">110. TOWAI-background-blur
+  <div class="description">اعمال افکت blur روی پس‌زمینه عنصر برای ایجاد عمق.</div>
+</div>
+<div class="keyword" data-category="css">111. TOWAI-backdrop-filter
+  <div class="description">اعمال فیلتر روی پس‌زمینه نیمه شفاف عنصر برای جلوه‌های مدرن.</div>
+</div>
+<div class="keyword" data-category="css">112. TOWAI-border-gradient
+  <div class="description">ایجاد حاشیه gradient برای ظاهر جذاب و نئونی.</div>
+</div>
+<div class="keyword" data-category="css">113. TOWAI-border-dashed
+  <div class="description">حاشیه خط‌چین برای عنصر.</div>
+</div>
+<div class="keyword" data-category="css">114. TOWAI-border-dotted
+  <div class="description">حاشیه نقطه‌چین برای عنصر.</div>
+</div>
+<div class="keyword" data-category="css">115. TOWAI-border-solid
+  <div class="description">حاشیه خطی یا solid برای عناصر.</div>
+</div>
+<div class="keyword" data-category="css">116. TOWAI-border-hover-animation
+  <div class="description">افکت حرکت یا تغییر حاشیه هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">117. TOWAI-gradient-text
+  <div class="description">اعمال gradient روی متن برای جلوه نئونی یا مدرن.</div>
+</div>
+<div class="keyword" data-category="css">118. TOWAI-text-hover-gradient
+  <div class="description">تغییر gradient متن هنگام hover برای افکت جذاب.</div>
+</div>
+<div class="keyword" data-category="css">119. TOWAI-glow
+  <div class="description">افکت نور درخشان دور عنصر برای جلوه نئونی.</div>
+</div>
+<div class="keyword" data-category="css">120. TOWAI-text-glow
+  <div class="description">افکت نور دور متن برای طراحی Cyberpunk یا neon.</div>
+</div>
+<div class="keyword" data-category="css">121. TOWAI-hover-glow
+  <div class="description">افکت نور دور عنصر هنگام hover برای تاکید یا جذابیت.</div>
+</div>
+<div class="keyword" data-category="css">122. TOWAI-hover-text-glow
+  <div class="description">افکت نور دور متن هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">123. TOWAI-neon-border
+  <div class="description">حاشیه با افکت نئونی برای عناصر مدرن و Cyberpunk.</div>
+</div>
+<div class="keyword" data-category="css">124. TOWAI-neon-text
+  <div class="description">متن با افکت نئونی و روشنایی کم رنگ.</div>
+</div>
+<div class="keyword" data-category="css">125. TOWAI-neon-background
+  <div class="description">پس‌زمینه با رنگ‌های نئونی و gradient برای جلوه Cyberpunk.</div>
+</div>
+<div class="keyword" data-category="css">126. TOWAI-scrollbar
+  <div class="description">استایل سفارشی برای scrollbar مرورگر.</div>
+</div>
+<div class="keyword" data-category="css">127. TOWAI-scrollbar-thumb
+  <div class="description">بخش draggable scrollbar با استایل سفارشی.</div>
+</div>
+<div class="keyword" data-category="css">128. TOWAI-scrollbar-track
+  <div class="description">مسیر scrollbar با استایل سفارشی.</div>
+</div>
+<div class="keyword" data-category="css">129. TOWAI-scrollbar-hover
+  <div class="description">تغییر ظاهر scrollbar هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">130. TOWAI-scroll-smooth
+  <div class="description">افکت scroll نرم و روان برای صفحه یا container.</div>
+</div>
+<div class="keyword" data-category="css">131. TOWAI-responsive
+  <div class="description">طراحی واکنش‌گرا با media query و breakpoints.</div>
+</div>
+<div class="keyword" data-category="css">132. TOWAI-media-query
+  <div class="description">استفاده از media query برای تغییر layout یا style در اندازه‌های مختلف صفحه.</div>
+</div>
+<div class="keyword" data-category="css">133. TOWAI-display-none
+  <div class="description">پنهان کردن عنصر بدون حذف از DOM.</div>
+</div>
+<div class="keyword" data-category="css">134. TOWAI-display-block
+  <div class="description">نمایش عنصر به صورت block.</div>
+</div>
+<div class="keyword" data-category="css">135. TOWAI-display-inline
+  <div class="description">نمایش عنصر به صورت inline.</div>
+</div>
+<div class="keyword" data-category="css">136. TOWAI-display-inline-block
+  <div class="description">نمایش inline با قابلیت تنظیم width/height.</div>
+</div>
+<div class="keyword" data-category="css">137. TOWAI-clip-path
+  <div class="description">برش شکل دلخواه عنصر برای افکت‌های خاص و mask.</div>
+</div>
+<div class="keyword" data-category="css">138. TOWAI-mask-image
+  <div class="description">اعمال تصویر ماسک روی عنصر برای افکت‌های جذاب.</div>
+</div>
+<div class="keyword" data-category="css">139. TOWAI-mask-repeat
+  <div class="description">تکرار تصویر ماسک روی عنصر.</div>
+</div>
+<div class="keyword" data-category="css">140. TOWAI-mask-position
+  <div class="description">تنظیم موقعیت تصویر ماسک روی عنصر.</div>
+</div>
+<div class="keyword" data-category="css">141. TOWAI-blend-mode
+  <div class="description">ترکیب رنگ عناصر با background یا عنصر دیگر با blend-mode.</div>
+</div>
+<div class="keyword" data-category="css">142. TOWAI-mix-blend-mode
+  <div class="description">ترکیب چند لایه عنصر با blend mode برای افکت‌های ویژه.</div>
+</div>
+<div class="keyword" data-category="css">143. TOWAI-isolation
+  <div class="description">جدا کردن عنصر از blend-mode عناصر دیگر.</div>
+</div>
+<div class="keyword" data-category="css">144. TOWAI-pointer-events
+  <div class="description">مدیریت تعامل موس روی عنصر: auto, none.</div>
+</div>
+<div class="keyword" data-category="css">145. TOWAI-visibility
+  <div class="description">کنترل نمایش عنصر: visible یا hidden بدون تغییر layout.</div>
+</div>
+<div class="keyword" data-category="css">146. TOWAI-overflow-clip
+  <div class="description">برش محتوا اضافی بدون نمایش scroll.</div>
+</div>
+<div class="keyword" data-category="css">147. TOWAI-contain
+  <div class="description">محدود کردن scope عناصر برای layout، style و paint.</div>
+</div>
+<div class="keyword" data-category="css">148. TOWAI-will-change
+  <div class="description">اعلام تغییرات CSS که قرار است رخ دهد برای بهبود performance.</div>
+</div>
+<div class="keyword" data-category="css">149. TOWAI-object-fit-cover
+  <div class="description">پر کردن کامل container با تصویر یا ویدیو بدون distortion.</div>
+</div>
+<div class="keyword" data-category="css">150. TOWAI-object-fit-contain
+  <div class="description">قرار دادن تصویر یا ویدیو در container بدون بریدگی و distortion.</div>
+</div>
+<div class="keyword" data-category="css">151. TOWAI-scroll-snap
+  <div class="description">فعال کردن scroll snapping برای alignment دقیق عناصر هنگام scroll.</div>
+</div>
+<div class="keyword" data-category="css">152. TOWAI-scroll-snap-type
+  <div class="description">تعریف جهت و نوع snap: x, y, both یا mandatory/proximity.</div>
+</div>
+<div class="keyword" data-category="css">153. TOWAI-scroll-snap-align
+  <div class="description">تعیین نحوه align عناصر داخل container هنگام snap.</div>
+</div>
+<div class="keyword" data-category="css">154. TOWAI-sticky
+  <div class="description">موقعیت sticky عنصر برای چسبیدن هنگام scroll بین relative و fixed.</div>
+</div>
+<div class="keyword" data-category="css">155. TOWAI-stick-top
+  <div class="description">چسبیدن عنصر به بالای viewport هنگام scroll.</div>
+</div>
+<div class="keyword" data-category="css">156. TOWAI-stick-bottom
+  <div class="description">چسبیدن عنصر به پایین viewport هنگام scroll.</div>
+</div>
+<div class="keyword" data-category="css">157. TOWAI-sticky-hover
+  <div class="description">اعمال افکت hover روی عناصر sticky برای تعامل بهتر.</div>
+</div>
+<div class="keyword" data-category="css">158. TOWAI-transform-origin
+  <div class="description">تعریف نقطه مبنا برای transform عناصر: center, top, bottom و غیره.</div>
+</div>
+<div class="keyword" data-category="css">159. TOWAI-perspective
+  <div class="description">تعریف فاصله دید برای عناصر سه‌بعدی و transform 3D.</div>
+</div>
+<div class="keyword" data-category="css">160. TOWAI-perspective-origin
+  <div class="description">تنظیم نقطه origin برای perspective جهت کنترل دید 3D.</div>
+</div>
+<div class="keyword" data-category="css">161. TOWAI-backface-visibility
+  <div class="description">کنترل نمایش پشت عنصر هنگام چرخش 3D.</div>
+</div>
+<div class="keyword" data-category="css">162. TOWAI-transform-style
+  <div class="description">اعمال transform در 2D یا 3D برای child elements.</div>
+</div>
+<div class="keyword" data-category="css">163. TOWAI-perspective-hover
+  <div class="description">اعمال افکت perspective در hover برای حرکت سه‌بعدی جذاب.</div>
+</div>
+<div class="keyword" data-category="css">164. TOWAI-clip-path-hover
+  <div class="description">تغییر shape عنصر هنگام hover با clip-path برای افکت‌های مدرن.</div>
+</div>
+<div class="keyword" data-category="css">165. TOWAI-mask-hover
+  <div class="description">تغییر تصویر ماسک عنصر هنگام hover برای جلوه‌های بصری جذاب.</div>
+</div>
+<div class="keyword" data-category="css">166. TOWAI-gradient-hover-animation
+  <div class="description">حرکت و تغییر gradient عنصر هنگام hover با animation.</div>
+</div>
+<div class="keyword" data-category="css">167. TOWAI-text-gradient-hover-animation
+  <div class="description">حرکت gradient متن هنگام hover برای جلوه نئونی.</div>
+</div>
+<div class="keyword" data-category="css">168. TOWAI-neon-hover
+  <div class="description">افکت نور نئونی برای عنصر هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">169. TOWAI-neon-text-hover
+  <div class="description">افکت نور نئونی روی متن هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">170. TOWAI-neon-border-hover
+  <div class="description">تغییر رنگ و glow حاشیه نئونی هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">171. TOWAI-hover-scale
+  <div class="description">افزایش یا کاهش اندازه عنصر هنگام hover با scale transform.</div>
+</div>
+<div class="keyword" data-category="css">172. TOWAI-hover-rotate
+  <div class="description">چرخش عنصر هنگام hover با transform rotate.</div>
+</div>
+<div class="keyword" data-category="css">173. TOWAI-hover-translate
+  <div class="description">جابجایی عنصر هنگام hover برای افکت slide یا حرکت.</div>
+</div>
+<div class="keyword" data-category="css">174. TOWAI-hover-skew
+  <div class="description">شیب دادن عنصر هنگام hover با transform skew.</div>
+</div>
+<div class="keyword" data-category="css">175. TOWAI-hover-blur
+  <div class="description">اعمال افکت تار شدن عنصر هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">176. TOWAI-hover-brightness
+  <div class="description">افزایش یا کاهش روشنایی عنصر هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">177. TOWAI-hover-contrast
+  <div class="description">افزایش یا کاهش کنتراست عنصر هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">178. TOWAI-hover-saturate
+  <div class="description">افزایش یا کاهش شدت رنگ عنصر هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">179. TOWAI-hover-grayscale
+  <div class="description">تبدیل عنصر به حالت سیاه و سفید هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">180. TOWAI-hover-text-glow-animation
+  <div class="description">حرکت glow متن هنگام hover برای جلوه نئونی و Cyberpunk.</div>
+</div>
+<div class="keyword" data-category="css">181. TOWAI-hover-box-glow-animation
+  <div class="description">حرکت glow دور عنصر هنگام hover با animation نرم.</div>
+</div>
+<div class="keyword" data-category="css">182. TOWAI-hover-border-glow-animation
+  <div class="description">حرکت glow حاشیه عنصر هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">183. TOWAI-hover-gradient-text-animation
+  <div class="description">تغییر gradient متن هنگام hover با انیمیشن جذاب.</div>
+</div>
+<div class="keyword" data-category="css">184. TOWAI-hover-gradient-background-animation
+  <div class="description">تغییر gradient پس‌زمینه هنگام hover با انیمیشن smooth.</div>
+</div>
+<div class="keyword" data-category="css">185. TOWAI-hover-neon-animation
+  <div class="description">انیمیشن نور نئونی عنصر هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">186. TOWAI-hover-neon-text-animation
+  <div class="description">انیمیشن نور نئونی متن هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">187. TOWAI-hover-neon-border-animation
+  <div class="description">انیمیشن نور نئونی حاشیه عنصر هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">188. TOWAI-hover-shadow-animation
+  <div class="description">حرکت سایه عنصر هنگام hover برای افکت برجسته و نئونی.</div>
+</div>
+<div class="keyword" data-category="css">189. TOWAI-hover-text-shadow-animation
+  <div class="description">حرکت سایه متن هنگام hover با animation smooth.</div>
+</div>
+<div class="keyword" data-category="css">190. TOWAI-hover-blur-animation
+  <div class="description">افکت blur عنصر هنگام hover با انیمیشن نرم.</div>
+</div>
+<div class="keyword" data-category="css">191. TOWAI-hover-brightness-animation
+  <div class="description">افزایش یا کاهش روشنایی عنصر هنگام hover با انیمیشن smooth.</div>
+</div>
+<div class="keyword" data-category="css">192. TOWAI-hover-contrast-animation
+  <div class="description">افزایش یا کاهش کنتراست عنصر هنگام hover با انیمیشن smooth.</div>
+</div>
+<div class="keyword" data-category="css">193. TOWAI-hover-saturate-animation
+  <div class="description">افزایش یا کاهش شدت رنگ عنصر هنگام hover با انیمیشن smooth.</div>
+</div>
+<div class="keyword" data-category="css">194. TOWAI-hover-grayscale-animation
+  <div class="description">تبدیل عنصر به حالت سیاه و سفید هنگام hover با انیمیشن smooth.</div>
+</div>
+<div class="keyword" data-category="css">195. TOWAI-hover-transform-animation
+  <div class="description">اعمال transform مانند scale, rotate, translate با انیمیشن هنگام hover.</div>
+</div>
+<div class="keyword" data-category="css">196. TOWAI-hover-3d-animation
+  <div class="description">حرکت عناصر با افکت 3D هنگام hover برای جلوه مدرن.</div>
+</div>
+<div class="keyword" data-category="css">197. TOWAI-hover-perspective-animation
+  <div class="description">اعمال perspective و transform 3D هنگام hover با انیمیشن نرم.</div>
+</div>
+<div class="keyword" data-category="css">198. TOWAI-hover-clip-path-animation
+  <div class="description">تغییر shape عناصر هنگام hover با clip-path animation.</div>
+</div>
+<div class="keyword" data-category="css">199. TOWAI-hover-mask-animation
+  <div class="description">تغییر ماسک عناصر هنگام hover با انیمیشن smooth.</div>
+</div>
+<div class="keyword" data-category="css">200. TOWAI-hover-glow-animation
+  <div class="description">انیمیشن نور دور عنصر هنگام hover برای افکت نئونی کامل.</div>
+</div>
+
+
+  <!-- JS (12) -->
+  <div class="keyword" data-category="js">document.querySelector<div class="description">انتخاب یک عنصر DOM با CSS selector. پایه تعامل با عناصر برای style و event handling.</div></div>
+  <div class="keyword" data-category="js">document.querySelectorAll<div class="description">انتخاب چند عنصر DOM به صورت NodeList. برای loop و اعمال style یا event روی مجموعه عناصر کاربرد دارد.</div></div>
+  <div class="keyword" data-category="js">addEventListener<div class="description">ثبت listener برای رویدادها: click, mouseover, keypress. پایه interactivity و dynamic UI.</div></div>
+  <div class="keyword" data-category="js">fetch<div class="description">درخواست HTTP برای دریافت یا ارسال داده. کاربرد در API consumption و Ajax بدون library.</div></div>
+  <div class="keyword" data-category="js">async/await<div class="description">مدیریت async code به شکل synchronous-like. استفاده در fetch، database و عملیات طولانی.</div></div>
+  <div class="keyword" data-category="js">localStorage<div class="description">ذخیره داده روی مرورگر. حفظ session, theme, preferences یا caching بدون server.</div></div>
+  <div class="keyword" data-category="js">sessionStorage<div class="description">مشابه localStorage اما فقط برای session جاری. کاربرد در temporary data و wizard forms.</div></div>
+  <div class="keyword" data-category="js">JSON.parse / JSON.stringify<div class="description">تبدیل بین string و object JSON. پایه ارتباط با API و ذخیره سازی data.</div></div>
+  <div class="keyword" data-category="js">setTimeout / setInterval<div class="description">زمان‌بندی اجرای تابع. کاربرد در animation، polling یا delayed actions.</div></div>
+  <div class="keyword" data-category="js">class<div class="description">تعریف کلاس برای object-oriented JS. کاربرد در ساخت ماژول، component و reusable code.</div></div>
+  <div class="keyword" data-category="js">import/export<div class="description">ماژول‌بندی JS. جدا کردن code به فایل‌ها، ساخت package و مدیریت dependencyها.</div></div>
+  <div class="keyword" data-category="js">template literals<div class="description">رشته‌های چندخطی با ${variable} interpolation. ساده کردن HTML injection و dynamic content.</div></div>
+  <div class="keyword" data-category="js">spread operator<div class="description">گسترش iterableها به عناصر جداگانه. کاربرد در array و object manipulation.</div></div>
+<div class="keyword" data-category="js">1. TOWAI-fetchData
+  <div class="description">تابعی برای گرفتن داده‌ها از API با fetch و promise handling.</div>
+</div>
+<div class="keyword" data-category="js">2. TOWAI-postData
+  <div class="description">تابعی برای ارسال داده‌ها به سرور با POST و مدیریت JSON.</div>
+</div>
+<div class="keyword" data-category="js">3. TOWAI-debounce
+  <div class="description">تابعی برای کاهش تعداد اجرای متدها هنگام eventهای مکرر مانند input یا scroll.</div>
+</div>
+<div class="keyword" data-category="js">4. TOWAI-throttle
+  <div class="description">تابعی برای محدود کردن تعداد اجرای event handlerها در زمان مشخص.</div>
+</div>
+<div class="keyword" data-category="js">5. TOWAI-localStorageSet
+  <div class="description">ذخیره داده‌ها در localStorage با قابلیت JSON stringify و مدیریت خطا.</div>
+</div>
+<div class="keyword" data-category="js">6. TOWAI-localStorageGet
+  <div class="description">خواندن داده‌ها از localStorage با parse اتوماتیک JSON و fallback.</div>
+</div>
+<div class="keyword" data-category="js">7. TOWAI-cookieSet
+  <div class="description">ایجاد یا بروز رسانی کوکی با options مانند expires و path.</div>
+</div>
+<div class="keyword" data-category="js">8. TOWAI-cookieGet
+  <div class="description">خواندن مقدار کوکی مشخص با parse اتوماتیک.</div>
+</div>
+<div class="keyword" data-category="js">9. TOWAI-cookieDelete
+  <div class="description">حذف کوکی با تنظیم تاریخ منقضی گذشته.</div>
+</div>
+<div class="keyword" data-category="js">10. TOWAI-eventListener
+  <div class="description">افزودن listener به عنصر برای eventهای مختلف مانند click, input, scroll.</div>
+</div>
+<div class="keyword" data-category="js">11. TOWAI-eventRemove
+  <div class="description">حذف listener از عنصر برای آزادسازی منابع و مدیریت memory.</div>
+</div>
+<div class="keyword" data-category="js">12. TOWAI-classAdd
+  <div class="description">افزودن class به عنصر بدون override کلاس‌های قبلی.</div>
+</div>
+<div class="keyword" data-category="js">13. TOWAI-classRemove
+  <div class="description">حذف class از عنصر بدون تاثیر روی کلاس‌های دیگر.</div>
+</div>
+<div class="keyword" data-category="js">14. TOWAI-classToggle
+  <div class="description">تغییر وضعیت کلاس بین اضافه و حذف برای افکت‌های UI.</div>
+</div>
+<div class="keyword" data-category="js">15. TOWAI-styleSet
+  <div class="description">اعمال style سفارشی به عنصر با قابلیت override و transition.</div>
+</div>
+<div class="keyword" data-category="js">16. TOWAI-styleGet
+  <div class="description">خواندن مقدار فعلی style عنصر برای محاسبه یا بررسی وضعیت.</div>
+</div>
+<div class="keyword" data-category="js">17. TOWAI-elementCreate
+  <div class="description">ایجاد عنصر DOM جدید با tag, class و attributes مشخص.</div>
+</div>
+<div class="keyword" data-category="js">18. TOWAI-elementAppend
+  <div class="description">افزودن عنصر جدید به parent مشخص در DOM.</div>
+</div>
+<div class="keyword" data-category="js">19. TOWAI-elementRemove
+  <div class="description">حذف عنصر از DOM برای مدیریت dynamic content.</div>
+</div>
+<div class="keyword" data-category="js">20. TOWAI-elementReplace
+  <div class="description">جایگزینی یک عنصر DOM با عنصر دیگر.</div>
+</div>
+<div class="keyword" data-category="js">21. TOWAI-textSet
+  <div class="description">تغییر متن داخلی عنصر با innerText یا textContent.</div>
+</div>
+<div class="keyword" data-category="js">22. TOWAI-htmlSet
+  <div class="description">تنظیم innerHTML عنصر با محتوای HTML داینامیک.</div>
+</div>
+<div class="keyword" data-category="js">23. TOWAI-htmlGet
+  <div class="description">خواندن محتوای HTML داخلی عنصر برای پردازش یا ذخیره.</div>
+</div>
+<div class="keyword" data-category="js">24. TOWAI-onClick
+  <div class="description">افزودن event click به عنصر با handler سفارشی.</div>
+</div>
+<div class="keyword" data-category="js">25. TOWAI-onHover
+  <div class="description">افزودن event mouseenter یا mouseover به عنصر برای افکت hover.</div>
+</div>
+<div class="keyword" data-category="js">26. TOWAI-onScroll
+  <div class="description">افزودن listener برای scroll event روی window یا container.</div>
+</div>
+<div class="keyword" data-category="js">27. TOWAI-onInput
+  <div class="description">افزودن listener برای input event روی فرم‌ها یا عناصر قابل ویرایش.</div>
+</div>
+<div class="keyword" data-category="js">28. TOWAI-onSubmit
+  <div class="description">افزودن listener برای submit فرم با مدیریت preventDefault.</div>
+</div>
+<div class="keyword" data-category="js">29. TOWAI-onChange
+  <div class="description">افزودن listener برای تغییر مقدار input یا select.</div>
+</div>
+<div class="keyword" data-category="js">30. TOWAI-onKeyPress
+  <div class="description">افزودن listener برای keypress event و مدیریت کلیدهای خاص.</div>
+</div>
+<div class="keyword" data-category="js">31. TOWAI-onKeyDown
+  <div class="description">افزودن listener برای keydown event روی عنصر یا window.</div>
+</div>
+<div class="keyword" data-category="js">32. TOWAI-onKeyUp
+  <div class="description">افزودن listener برای keyup event روی عنصر یا window.</div>
+</div>
+<div class="keyword" data-category="js">33. TOWAI-setInterval
+  <div class="description">اجرای تابع در بازه‌های زمانی مشخص با setInterval.</div>
+</div>
+<div class="keyword" data-category="js">34. TOWAI-clearInterval
+  <div class="description">متوقف کردن setInterval با clearInterval.</div>
+</div>
+<div class="keyword" data-category="js">35. TOWAI-setTimeout
+  <div class="description">اجرای تابع پس از زمان مشخص با setTimeout.</div>
+</div>
+<div class="keyword" data-category="js">36. TOWAI-clearTimeout
+  <div class="description">لغو اجرای تابع زمان‌بندی شده با clearTimeout.</div>
+</div>
+<div class="keyword" data-category="js">37. TOWAI-promiseAll
+  <div class="description">اجرای همزمان چند promise و دریافت نتیجه‌ها به صورت array.</div>
+</div>
+<div class="keyword" data-category="js">38. TOWAI-promiseRace
+  <div class="description">بازگشت اولین promise که کامل شد در مجموعه‌ای از promiseها.</div>
+</div>
+<div class="keyword" data-category="js">39. TOWAI-asyncAwait
+  <div class="description">استفاده از async و await برای مدیریت flow promiseها به صورت سینکرون.</div>
+</div>
+<div class="keyword" data-category="js">40. TOWAI-tryCatch
+  <div class="description">مدیریت خطاها در بلوک try/catch هنگام اجرای JS.</div>
+</div>
+<div class="keyword" data-category="js">41. TOWAI-consoleLog
+  <div class="description">چاپ اطلاعات، اشکال‌زدایی و داده‌ها در کنسول مرورگر.</div>
+</div>
+<div class="keyword" data-category="js">42. TOWAI-consoleError
+  <div class="description">چاپ خطاها در کنسول برای دیباگ سریع و مدیریت ارورها.</div>
+</div>
+<div class="keyword" data-category="js">43. TOWAI-consoleWarn
+  <div class="description">چاپ هشدارها در کنسول برای اطلاع از مشکلات احتمالی.</div>
+</div>
+<div class="keyword" data-category="js">44. TOWAI-consoleTable
+  <div class="description">نمایش داده‌ها به شکل جدول در کنسول برای readability بهتر.</div>
+</div>
+<div class="keyword" data-category="js">45. TOWAI-JSONParse
+  <div class="description">تبدیل رشته JSON به object JS با مدیریت خطا.</div>
+</div>
+<div class="keyword" data-category="js">46. TOWAI-JSONStringify
+  <div class="description">تبدیل object JS به رشته JSON برای ارسال یا ذخیره.</div>
+</div>
+<div class="keyword" data-category="js">47. TOWAI-deepClone
+  <div class="description">کپی عمیق object یا array بدون ارجاع به مقدار اصلی.</div>
+</div>
+<div class="keyword" data-category="js">48. TOWAI-mergeObjects
+  <div class="description">ادغام چند object به صورت shallow یا deep merge.</div>
+</div>
+<div class="keyword" data-category="js">49. TOWAI-randomNumber
+  <div class="description">تولید عدد تصادفی در بازه مشخص با قابلیت integer یا float.</div>
+</div>
+<div class="keyword" data-category="js">50. TOWAI-randomColor
+  <div class="description">تولید رنگ تصادفی RGB یا HEX برای عناصر UI.</div>
+</div>
+<div class="keyword" data-category="js">51. TOWAI-addEvent
+  <div class="description">افزودن event listener عمومی به عناصر DOM با مدیریت multiple events.</div>
+</div>
+<div class="keyword" data-category="js">52. TOWAI-removeEvent
+  <div class="description">حذف event listener از عناصر برای جلوگیری از memory leak.</div>
+</div>
+<div class="keyword" data-category="js">53. TOWAI-toggleClass
+  <div class="description">تغییر وضعیت کلاس عنصر بین فعال و غیر فعال برای افکت‌های UI.</div>
+</div>
+<div class="keyword" data-category="js">54. TOWAI-hasClass
+  <div class="description">بررسی وجود کلاس مشخص روی عنصر.</div>
+</div>
+<div class="keyword" data-category="js">55. TOWAI-getAttribute
+  <div class="description">خواندن مقدار attribute خاص از یک عنصر DOM.</div>
+</div>
+<div class="keyword" data-category="js">56. TOWAI-setAttribute
+  <div class="description">تنظیم مقدار attribute روی عنصر DOM.</div>
+</div>
+<div class="keyword" data-category="js">57. TOWAI-removeAttribute
+  <div class="description">حذف attribute مشخص از عنصر DOM.</div>
+</div>
+<div class="keyword" data-category="js">58. TOWAI-querySelector
+  <div class="description">انتخاب اولین عنصر مطابق selector CSS.</div>
+</div>
+<div class="keyword" data-category="js">59. TOWAI-querySelectorAll
+  <div class="description">انتخاب تمام عناصر مطابق selector CSS و بازگرداندن NodeList.</div>
+</div>
+<div class="keyword" data-category="js">60. TOWAI-parentElement
+  <div class="description">دریافت عنصر والد یک عنصر DOM.</div>
+</div>
+<div class="keyword" data-category="js">61. TOWAI-childElements
+  <div class="description">دریافت تمام عناصر فرزند یک parent مشخص.</div>
+</div>
+<div class="keyword" data-category="js">62. TOWAI-siblingElements
+  <div class="description">دریافت عناصر هم‌سطح با عنصر مشخص در DOM.</div>
+</div>
+<div class="keyword" data-category="js">63. TOWAI-nextSibling
+  <div class="description">دریافت عنصر بعدی در سطح DOM نسبت به عنصر فعلی.</div>
+</div>
+<div class="keyword" data-category="js">64. TOWAI-previousSibling
+  <div class="description">دریافت عنصر قبلی در سطح DOM نسبت به عنصر فعلی.</div>
+</div>
+<div class="keyword" data-category="js">65. TOWAI-createFragment
+  <div class="description">ایجاد DocumentFragment برای افزودن عناصر به DOM بهینه.</div>
+</div>
+<div class="keyword" data-category="js">66. TOWAI-appendFragment
+  <div class="description">افزودن عناصر DocumentFragment به parent بدون reflow زیاد.</div>
+</div>
+<div class="keyword" data-category="js">67. TOWAI-removeFragment
+  <div class="description">حذف عناصر موجود در DocumentFragment از DOM.</div>
+</div>
+<div class="keyword" data-category="js">68. TOWAI-getComputedStyle
+  <div class="description">دریافت style واقعی اعمال شده روی عنصر توسط مرورگر.</div>
+</div>
+<div class="keyword" data-category="js">69. TOWAI-getBoundingClientRect
+  <div class="description">دریافت موقعیت و اندازه دقیق عنصر نسبت به viewport.</div>
+</div>
+<div class="keyword" data-category="js">70. TOWAI-offsetTop
+  <div class="description">دریافت فاصله عنصر از بالای parent offset.</div>
+</div>
+<div class="keyword" data-category="js">71. TOWAI-offsetLeft
+  <div class="description">دریافت فاصله عنصر از سمت چپ parent offset.</div>
+</div>
+<div class="keyword" data-category="js">72. TOWAI-scrollTop
+  <div class="description">خواندن یا تنظیم scroll عمودی عنصر یا window.</div>
+</div>
+<div class="keyword" data-category="js">73. TOWAI-scrollLeft
+  <div class="description">خواندن یا تنظیم scroll افقی عنصر یا window.</div>
+</div>
+<div class="keyword" data-category="js">74. TOWAI-scrollIntoView
+  <div class="description">جابجایی عنصر به viewport برای دیدن کامل آن.</div>
+</div>
+<div class="keyword" data-category="js">75. TOWAI-toggleVisibility
+  <div class="description">تغییر نمایش عنصر بین visible و hidden یا display:none.</div>
+</div>
+<div class="keyword" data-category="js">76. TOWAI-showElement
+  <div class="description">نمایش عنصر با تنظیم display یا visibility مناسب.</div>
+</div>
+<div class="keyword" data-category="js">77. TOWAI-hideElement
+  <div class="description">پنهان کردن عنصر با display:none یا visibility:hidden.</div>
+</div>
+<div class="keyword" data-category="js">78. TOWAI-animationFrame
+  <div class="description">اجرای کد در رندر بعدی با requestAnimationFrame برای smooth animation.</div>
+</div>
+<div class="keyword" data-category="js">79. TOWA2-cancelAnimationFrame
+  <div class="description">لغو اجرای animation frame برنامه‌ریزی شده.</div>
+</div>
+<div class="keyword" data-category="js">80. TOWAI-addClassAnimation
+  <div class="description">اضافه کردن کلاس CSS با animation فعال روی عنصر.</div>
+</div>
+<div class="keyword" data-category="js">81. TOWAI-removeClassAnimation
+  <div class="description">حذف کلاس CSS همراه با animation برای افکت‌های smooth.</div>
+</div>
+<div class="keyword" data-category="js">82. TOWAI-toggleClassAnimation
+  <div class="description">تغییر کلاس CSS با animation بین اضافه و حذف.</div>
+</div>
+<div class="keyword" data-category="js">83. TOWAI-neonEffect
+  <div class="description">اعمال افکت نئونی روی متن یا عناصر با ترکیب CSS و JS.</div>
+</div>
+<div class="keyword" data-category="js">84. TOWAI-neonTextEffect
+  <div class="description">افکت نور نئونی اختصاصی روی متن با JS برای hover یا load.</div>
+</div>
+<div class="keyword" data-category="js">85. TOWAI-neonBoxEffect
+  <div class="description">افکت نور نئونی دور عناصر box برای جلوه‌های Cyberpunk.</div>
+</div>
+<div class="keyword" data-category="js">86. TOWAI-gradientText
+  <div class="description">اعمال gradient روی متن با ترکیب CSS و JS.</div>
+</div>
+<div class="keyword" data-category="js">87. TOWAI-gradientBackground
+  <div class="description">اعمال gradient روی پس‌زمینه عناصر به صورت دینامیک.</div>
+</div>
+<div class="keyword" data-category="js">88. TOWAI-clickAnimation
+  <div class="description">افکت انیمیشن هنگام کلیک روی عناصر UI.</div>
+</div>
+<div class="keyword" data-category="js">89. TOWAI-dragElement
+  <div class="description">قابلیت drag & drop برای عنصر مشخص در صفحه.</div>
+</div>
+<div class="keyword" data-category="js">90. TOWAI-dropTarget
+  <div class="description">تعیین عنصر مقصد برای drop هنگام drag & drop.</div>
+</div>
+<div class="keyword" data-category="js">91. TOWAI-dragAndDrop
+  <div class="description">ترکیب قابلیت drag و drop با event handling و animation.</div>
+</div>
+<div class="keyword" data-category="js">92. TOWAI-accordionToggle
+  <div class="description">باز و بسته کردن عناصر accordion با مدیریت کلاس و style.</div>
+</div>
+<div class="keyword" data-category="js">93. TOWAI-modalOpen
+  <div class="description">باز کردن modal یا popup با کنترل overlay و animations.</div>
+</div>
+<div class="keyword" data-category="js">94. TOWAI-modalClose
+  <div class="description">بستن modal و cleanup eventها.</div>
+</div>
+<div class="keyword" data-category="js">95. TOWAI-tabsSwitch
+  <div class="description">سوئیچ کردن بین tabها با مدیریت کلاس active و content.</div>
+</div>
+<div class="keyword" data-category="js">96. TOWAI-tooltipShow
+  <div class="description">نمایش tooltip با محتوای داینامیک و hover.</div>
+</div>
+<div class="keyword" data-category="js">97. TOWAI-tooltipHide
+  <div class="description">پنهان کردن tooltip با انیمیشن smooth.</div>
+</div>
+<div class="keyword" data-category="js">98. TOWAI-carouselNext
+  <div class="description">جابجایی به اسلاید بعدی در carousel با animation.</div>
+</div>
+<div class="keyword" data-category="js">99. TOWAI-carouselPrev
+  <div class="description">جابجایی به اسلاید قبلی در carousel با animation.</div>
+</div>
+<div class="keyword" data-category="js">100. TOWAI-carouselGoTo
+  <div class="description">جابجایی به اسلاید مشخص در carousel با index و animation.</div>
+</div>
+<div class="keyword" data-category="js">101. TOWAI-formValidate
+  <div class="description">اعتبارسنجی فرم با بررسی ورودی‌ها و بازخورد به کاربر.</div>
+</div>
+<div class="keyword" data-category="js">102. TOWAI-formReset
+  <div class="description">ریست کردن فرم به مقادیر اولیه با JS.</div>
+</div>
+<div class="keyword" data-category="js">103. TOWAI-inputMask
+  <div class="description">اعمال ماسک روی input برای قالب‌بندی داده‌ها مانند تلفن یا تاریخ.</div>
+</div>
+<div class="keyword" data-category="js">104. TOWAI-autoComplete
+  <div class="description">فعال کردن پیش‌بینی یا تکمیل خودکار ورودی فرم با داده‌ها.</div>
+</div>
+<div class="keyword" data-category="js">105. TOWAI-sliderInit
+  <div class="description">راه‌اندازی slider با قابلیت drag و تنظیمات responsive.</div>
+</div>
+<div class="keyword" data-category="js">106. TOWAI-sliderNext
+  <div class="description">جابجایی به اسلاید بعدی در slider با animation smooth.</div>
+</div>
+<div class="keyword" data-category="js">107. TOWAI-sliderPrev
+  <div class="description">جابجایی به اسلاید قبلی در slider با animation smooth.</div>
+</div>
+<div class="keyword" data-category="js">108. TOWAI-sliderGoTo
+  <div class="description">رفتن به اسلاید مشخص در slider با index و animation.</div>
+</div>
+<div class="keyword" data-category="js">109. TOWAI-modalToggle
+  <div class="description">باز یا بسته کردن modal با مدیریت overlay و کلاس‌ها.</div>
+</div>
+<div class="keyword" data-category="js">110. TOWAI-notificationShow
+  <div class="description">نمایش notification با متن و تایمر محو شدن خودکار.</div>
+</div>
+<div class="keyword" data-category="js">111. TOWAI-notificationHide
+  <div class="description">محو کردن notification و cleanup eventها.</div>
+</div>
+<div class="keyword" data-category="js">112. TOWAI-toastShow
+  <div class="description">نمایش toast message کوتاه با انیمیشن smooth.</div>
+</div>
+<div class="keyword" data-category="js">113. TOWAI-toastHide
+  <div class="description">محو کردن toast message با cleanup صحیح DOM.</div>
+</div>
+<div class="keyword" data-category="js">114. TOWAI-tabSwitch
+  <div class="description">سوئیچ بین tabها با مدیریت کلاس active و محتوا.</div>
+</div>
+<div class="keyword" data-category="js">115. TOWAI-accordionOpen
+  <div class="description">باز کردن بخش accordion با انیمیشن slide.</div>
+</div>
+<div class="keyword" data-category="js">116. TOWAI-accordionClose
+  <div class="description">بستن بخش accordion با انیمیشن slide.</div>
+</div>
+<div class="keyword" data-category="js">117. TOWAI-scrollToTop
+  <div class="description">اسکرول نرم به بالای صفحه با requestAnimationFrame.</div>
+</div>
+<div class="keyword" data-category="js">118. TOWAI-scrollToElement
+  <div class="description">اسکرول به عنصر مشخص با offset و animation smooth.</div>
+</div>
+<div class="keyword" data-category="js">119. TOWAI-scrollSpy
+  <div class="description">ردیابی اسکرول برای تغییر کلاس یا highlight بخش فعال.</div>
+</div>
+<div class="keyword" data-category="js">120. TOWAI-lazyLoadImage
+  <div class="description">بارگذاری تصاویر تنها هنگام ورود به viewport برای بهبود performance.</div>
+</div>
+<div class="keyword" data-category="js">121. TOWAI-lazyLoadVideo
+  <div class="description">بارگذاری ویدیوها تنها هنگام ورود به viewport.</div>
+</div>
+<div class="keyword" data-category="js">122. TOWAI-intersectionObserver
+  <div class="description">استفاده از API برای مدیریت visibility و lazy loading عناصر.</div>
+</div>
+<div class="keyword" data-category="js">123. TOWAI-mutationObserver
+  <div class="description">مشاهده تغییرات در DOM و اجرای callback در صورت تغییر.</div>
+</div>
+<div class="keyword" data-category="js">124. TOWAI-windowResize
+  <div class="description">افزودن listener برای resize window و مدیریت layout دینامیک.</div>
+</div>
+<div class="keyword" data-category="js">125. TOWAI-windowScroll
+  <div class="description">افزودن listener برای scroll window برای افکت‌های UI.</div>
+</div>
+<div class="keyword" data-category="js">126. TOWAI-windowLoad
+  <div class="description">اجرای callback هنگام load شدن کامل window و منابع آن.</div>
+</div>
+<div class="keyword" data-category="js">127. TOWAI-documentReady
+  <div class="description">اجرای callback هنگام آماده شدن DOM بدون انتظار load کامل منابع.</div>
+</div>
+<div class="keyword" data-category="js">128. TOWAI-cookieManager
+  <div class="description">ماژول مدیریت کامل کوکی‌ها با get, set, delete و options پیشرفته.</div>
+</div>
+<div class="keyword" data-category="js">129. TOWAI-localStorageManager
+  <div class="description">ماژول مدیریت کامل localStorage با قابلیت expiry و fallback.</div>
+</div>
+<div class="keyword" data-category="js">130. TOWAI-sessionStorageManager
+  <div class="description">ماژول مدیریت کامل sessionStorage برای داده‌های موقت.</div>
+</div>
+<div class="keyword" data-category="js">131. TOWAI-animationHandler
+  <div class="description">ماژول کنترل انیمیشن‌ها و transitions عناصر UI.</div>
+</div>
+<div class="keyword" data-category="js">132. TOWAI-hoverEffect
+  <div class="description">اعمال افکت‌های hover داینامیک با ترکیب CSS و JS.</div>
+</div>
+<div class="keyword" data-category="js">133. TOWAI-clickEffect
+  <div class="description">اعمال افکت‌های جذاب هنگام کلیک روی عناصر UI.</div>
+</div>
+<div class="keyword" data-category="js">134. TOWAI-dragDropHandler
+  <div class="description">مدیریت کامل drag & drop عناصر با event handling و animation.</div>
+</div>
+<div class="keyword" data-category="js">135. TOWAI-carouselHandler
+  <div class="description">کنترل carousel با navigation، auto-play و animation smooth.</div>
+</div>
+<div class="keyword" data-category="js">136. TOWAI-sliderHandler
+  <div class="description">کنترل slider با navigation، loop و responsive settings.</div>
+</div>
+<div class="keyword" data-category="js">137. TOWAI-modalHandler
+  <div class="description">مدیریت باز و بسته شدن modal ها با overlay و animation.</div>
+</div>
+<div class="keyword" data-category="js">138. TOWAI-tooltipHandler
+  <div class="description">مدیریت tooltipها با محتوای داینامیک و hover.</div>
+</div>
+<div class="keyword" data-category="js">139. TOWAI-toastHandler
+  <div class="description">مدیریت toast messageها با نمایش، hide و انیمیشن smooth.</div>
+</div>
+<div class="keyword" data-category="js">140. TOWAI-dropdownHandler
+  <div class="description">مدیریت dropdown با toggle، clickOutside و keyboard navigation.</div>
+</div>
+<div class="keyword" data-category="js">141. TOWAI-menuHandler
+  <div class="description">مدیریت navigation menu با open/close، animation و responsive.</div>
+</div>
+<div class="keyword" data-category="js">142. TOWAI-sidebarHandler
+  <div class="description">کنترل sidebar باز و بسته شدن با overlay و animation smooth.</div>
+</div>
+<div class="keyword" data-category="js">143. TOWAI-tabHandler
+  <div class="description">مدیریت tabها با کلاس active، animation و محتوا.</div>
+</div>
+<div class="keyword" data-category="js">144. TOWAI-accordionHandler
+  <div class="description">مدیریت accordion با open/close و animation smooth.</div>
+</div>
+<div class="keyword" data-category="js">145. TOWAI-scrollAnimation
+  <div class="description">اعمال animation هنگام اسکرول روی عناصر صفحه.</div>
+</div>
+<div class="keyword" data-category="js">146. TOWAI-parallaxEffect
+  <div class="description">ایجاد افکت parallax با scroll و transformation عناصر.</div>
+</div>
+<div class="keyword" data-category="js">147. TOWAI-mouseTracker
+  <div class="description">ردیابی موقعیت موس و اعمال تغییرات داینامیک روی عناصر UI.</div>
+</div>
+<div class="keyword" data-category="js">148. TOWAI-keyboardShortcut
+  <div class="description">تعریف کلیدهای میانبر برای عملکردهای خاص در صفحه.</div>
+</div>
+<div class="keyword" data-category="js">149. TOWAI-gestureHandler
+  <div class="description">مدیریت gestureهای موس یا touch روی عناصر.</div>
+</div>
+<div class="keyword" data-category="js">150. TOWAI-themeSwitcher
+  <div class="description">تغییر بین تم‌های نور، تاریک یا نئونی با JS.</div>
+</div>
+<div class="keyword" data-category="js">151. TOWAI-darkModeToggle
+  <div class="description">تغییر وضعیت تم سایت بین حالت تاریک و روشن با JS.</div>
+</div>
+<div class="keyword" data-category="js">152. TOWAI-fontSizeAdjust
+  <div class="description">تنظیم اندازه فونت عناصر برای دسترسی بهتر و responsive design.</div>
+</div>
+<div class="keyword" data-category="js">153. TOWAI-themeSave
+  <div class="description">ذخیره تم انتخابی کاربر در localStorage برای استفاده بعدی.</div>
+</div>
+<div class="keyword" data-category="js">154. TOWAI-themeLoad
+  <div class="description">بارگذاری تم ذخیره شده هنگام ورود کاربر به سایت.</div>
+</div>
+<div class="keyword" data-category="js">155. TOWAI-fontLoader
+  <div class="description">بارگذاری فونت‌های سفارشی و اعمال آن‌ها روی عناصر.</div>
+</div>
+<div class="keyword" data-category="js">156. TOWAI-preloaderShow
+  <div class="description">نمایش preloader هنگام load شدن منابع یا صفحات.</div>
+</div>
+<div class="keyword" data-category="js">157. TOWAI-preloaderHide
+  <div class="description">پنهان کردن preloader بعد از بارگذاری کامل.</div>
+</div>
+<div class="keyword" data-category="js">158. TOWAI-pageTransition
+  <div class="description">افکت انتقال صفحات با انیمیشن smooth هنگام navigation.</div>
+</div>
+<div class="keyword" data-category="js">159. TOWAI-routerInit
+  <div class="description">راه‌اندازی router برای SPA با مدیریت مسیرها و state.</div>
+</div>
+<div class="keyword" data-category="js">160. TOWAI-routerNavigate
+  <div class="description">جابجایی بین صفحات SPA با update URL و مدیریت history.</div>
+</div>
+<div class="keyword" data-category="js">161. TOWAI-routerBack
+  <div class="description">بازگشت به مسیر قبلی در SPA با مدیریت state و history.</div>
+</div>
+<div class="keyword" data-category="js">162. TOWAI-routerForward
+  <div class="description">رفتن به مسیر بعدی در SPA با مدیریت history و state.</div>
+</div>
+<div class="keyword" data-category="js">163. TOWAI-cookieConsent
+  <div class="description">نمایش پنل موافقت کوکی‌ها و ذخیره انتخاب کاربر.</div>
+</div>
+<div class="keyword" data-category="js">164. TOWAI-analyticsEvent
+  <div class="description">ارسال event به سرویس‌های آنالیتیکس برای ردیابی user interaction.</div>
+</div>
+<div class="keyword" data-category="js">165. TOWAI-formSubmit
+  <div class="description">ارسال فرم با validation و مدیریت async request.</div>
+</div>
+<div class="keyword" data-category="js">166. TOWAI-formPrevent
+  <div class="description">جلوگیری از رفتار پیش‌فرض فرم هنگام submit با JS.</div>
+</div>
+<div class="keyword" data-category="js">167. TOWAI-apiRequest
+  <div class="description">ارسال درخواست به API با fetch یا axios و مدیریت response.</div>
+</div>
+<div class="keyword" data-category="js">168. TOWAI-apiResponse
+  <div class="description">پردازش پاسخ API و تبدیل آن به فرمت مناسب برای UI.</div>
+</div>
+<div class="keyword" data-category="js">169. TOWAI-errorHandler
+  <div class="description">مدیریت خطاها در بخش‌های مختلف JS با نمایش پیام یا logging.</div>
+</div>
+<div class="keyword" data-category="js">170. TOWAI-loadingIndicator
+  <div class="description">نمایش spinner یا loader هنگام پردازش async tasks.</div>
+</div>
+<div class="keyword" data-category="js">171. TOWAI-progressBar
+  <div class="description">نمایش نوار پیشرفت برای upload، download یا عملیات async.</div>
+</div>
+<div class="keyword" data-category="js">172. TOWAI-fileReader
+  <div class="description">خواندن فایل‌های کاربر با FileReader API و نمایش یا پردازش آن‌ها.</div>
+</div>
+<div class="keyword" data-category="js">173. TOWAI-fileUpload
+  <div class="description">ارسال فایل به سرور با مدیریت progress و validation.</div>
+</div>
+<div class="keyword" data-category="js">174. TOWAI-imagePreview
+  <div class="description">نمایش پیش‌نمایش تصویر قبل از آپلود با JS و FileReader.</div>
+</div>
+<div class="keyword" data-category="js">175. TOWAI-videoPreview
+  <div class="description">پیش‌نمایش ویدیو قبل از آپلود یا پخش.</div>
+</div>
+<div class="keyword" data-category="js">176. TOWAI-audioPlayer
+  <div class="description">ساخت پلیر صوتی با controls و event handling.</div>
+</div>
+<div class="keyword" data-category="js">177. TOWAI-videoPlayer
+  <div class="description">ساخت پلیر ویدیویی با controls و event handling.</div>
+</div>
+<div class="keyword" data-category="js">178. TOWAI-musicPlayer
+  <div class="description">پیاده‌سازی پلیر موزیک با playlist و controls.</div>
+</div>
+<div class="keyword" data-category="js">179. TOWAI-volumeControl
+  <div class="description">کنترل صدا برای audio یا video elements.</div>
+</div>
+<div class="keyword" data-category="js">180. TOWAI-playPause
+  <div class="description">اجرای play یا pause برای media elements با JS.</div>
+</div>
+<div class="keyword" data-category="js">181. TOWAI-mediaTimeUpdate
+  <div class="description">ردیابی زمان پخش media و اعمال UI updates.</div>
+</div>
+<div class="keyword" data-category="js">182. TOWAI-fullscreenToggle
+  <div class="description">تغییر حالت نمایش عنصر یا media به full screen.</div>
+</div>
+<div class="keyword" data-category="js">183. TOWAI-imageSlider
+  <div class="description">ایجاد slider تصاویر با navigation و auto-play.</div>
+</div>
+<div class="keyword" data-category="js">184. TOWAI-carouselAutoPlay
+  <div class="description">فعال کردن auto-play برای carousel با interval مشخص.</div>
+</div>
+<div class="keyword" data-category="js">185. TOWAI-carouselPause
+  <div class="description">توقف موقت carousel برای interaction کاربر.</div>
+</div>
+<div class="keyword" data-category="js">186. TOWAI-scrollAnimationTrigger
+  <div class="description">اجرای انیمیشن هنگام رسیدن عنصر به viewport.</div>
+</div>
+<div class="keyword" data-category="js">187. TOWAI-elementHighlight
+  <div class="description">هایلایت عناصر با کلاس یا style خاص هنگام interaction.</div>
+</div>
+<div class="keyword" data-category="js">188. TOWAI-dynamicContent
+  <div class="description">بارگذاری و نمایش محتوای داینامیک در بخش‌های مشخص UI.</div>
+</div>
+<div class="keyword" data-category="js">189. TOWAI-dataBind
+  <div class="description">بایندینگ داده‌ها به عناصر UI با update اتوماتیک.</div>
+</div>
+<div class="keyword" data-category="js">190. TOWAI-reactiveState
+  <div class="description">مدیریت state reactive برای بروزرسانی UI هنگام تغییر داده.</div>
+</div>
+<div class="keyword" data-category="js">191. TOWAI-templateRender
+  <div class="description">ریندر templateها با داده‌های داینامیک JS.</div>
+</div>
+<div class="keyword" data-category="js">192. TOWAI-componentInit
+  <div class="description">راه‌اندازی کامپوننت‌های سفارشی JS با props و events.</div>
+</div>
+<div class="keyword" data-category="js">193. TOWAI-componentDestroy
+  <div class="description">پاکسازی و حذف کامپوننت‌ها از DOM و memory.</div>
+</div>
+<div class="keyword" data-category="js">194. TOWAI-eventEmitter
+  <div class="description">ماژول ارسال و شنود eventهای سفارشی بین کامپوننت‌ها.</div>
+</div>
+<div class="keyword" data-category="js">195. TOWAI-stateManager
+  <div class="description">مدیریت state داینامیک برنامه و propagation به UI.</div>
+</div>
+<div class="keyword" data-category="js">196. TOWAI-routerState
+  <div class="description">مدیریت state مسیرها در SPA و component rendering.</div>
+</div>
+<div class="keyword" data-category="js">197. TOWAI-dataFetch
+  <div class="description">تابع عمومی برای fetch داده‌ها با retry و error handling.</div>
+</div>
+<div class="keyword" data-category="js">198. TOWAI-dataPost
+  <div class="description">ارسال داده‌ها به API با validation و مدیریت response.</div>
+</div>
+<div class="keyword" data-category="js">199. TOWAI-dataSync
+  <div class="description">همگام‌سازی داده‌ها بین local و remote با conflict resolution.</div>
+</div>
+<div class="keyword" data-category="js">200. TOWAI-utilityToolkit
+  <div class="description">مجموعه توابع کمکی عمومی JS برای استفاده در پروژه‌های مختلف.</div>
+</div>
+
+
+</section>
+
+<div class="pagination">
+  <button id="prevBtn">قبلی</button>
+  <button id="nextBtn">بعدی</button>
+</div>
+
+<script>
+const itemsPerPage = 212;
+let currentPage = 1;
+let currentTab = 'html';
+let searchQuery = '';
+
+const allKeywords = Array.from(document.querySelectorAll('.keyword'));
+
+function renderKeywords() {
+  allKeywords.forEach(el => el.classList.remove('show'));
+
+  const filtered = allKeywords.filter(el => {
+    const matchTab = el.dataset.category === currentTab;
+    const matchSearch = el.textContent.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchTab && matchSearch;
+  });
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+
+  filtered.forEach((el, i) => {
+    if (i >= start && i < end) {
+      el.classList.add('show');
+      setTimeout(() => el.style.opacity = 1, 50);
+    } else {
+      el.style.opacity = 0;
+      el.classList.remove('show');
+    }
+  });
+
+  document.getElementById('prevBtn').disabled = currentPage === 1;
+  document.getElementById('nextBtn').disabled = currentPage === totalPages || totalPages === 0;
+}
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelector('.tab.active').classList.remove('active');
+    tab.classList.add('active');
+    currentTab = tab.dataset.type;
+    currentPage = 1;
+    renderKeywords();
+  });
+});
+
+document.getElementById('nextBtn').addEventListener('click', () => {
+  const totalPages = Math.ceil(allKeywords.filter(el =>
+    el.dataset.category === currentTab &&
+    el.textContent.toLowerCase().includes(searchQuery.toLowerCase())
+  ).length / itemsPerPage);
+  if (currentPage < totalPages) {
+    currentPage++;
+    renderKeywords();
+  }
+});
+
+document.getElementById('prevBtn').addEventListener('click', () => {
+  if (currentPage > 1) {
+    currentPage--;
+    renderKeywords();
+  }
+});
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  searchQuery = e.target.value;
+  currentPage = 1;
+  renderKeywords();
+});
+
+allKeywords.forEach(el => {
+  el.addEventListener('click', () => el.classList.toggle('active'));
+});
+
+renderKeywords();
+</script>
+
+
+
+<div id="floatingLogo" title="بازگشت به بالا">
+  <svg viewBox="0 0 200 200" class="logo-svg">
+    <defs>
+      <linearGradient id="neonGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#00fff9"/>
+        <stop offset="50%" stop-color="#6ffffa"/>
+        <stop offset="100%" stop-color="#00aaff"/>
+      </linearGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="3.5" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+
+    <!-- لوگوی TOWAI -->
+    <text id="towaiText" x="50%" y="55%" text-anchor="middle" dominant-baseline="middle"
+          font-family="Orbitron" font-weight="700" font-size="48"
+          fill="url(#neonGradient)" filter="url(#glow)">
+      TOWAI
+    </text>
+  </svg>
+</div>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+
+#floatingLogo {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: 120px;
+  height: 120px;
+  cursor: pointer;
+  z-index: 9999;
+  perspective: 1000px;
+}
+
+.logo-svg {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: float 2s ease-in-out infinite alternate;
+}
+
+#towaiText {
+  transition: all 0.6s ease;
+  transform-origin: center center;
+}
+
+/* شناور بودن لوگو */
+@keyframes float {
+  0% { transform: translateY(0px) rotateY(0deg); }
+  50% { transform: translateY(-8px) rotateY(7deg); }
+  100% { transform: translateY(-15px) rotateY(15deg); }
+}
+
+/* انیمیشن موشکی */
+.rocket {
+  animation: rocketMove 1s forwards ease-in;
+}
+
+@keyframes rocketMove {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-50vh) scale(1.2); }
+  100% { transform: translateY(-100vh) scale(0.5); opacity: 0; }
+}
+</style>
+
+<script>
+const logo = document.getElementById('floatingLogo');
+
+logo.addEventListener('click', () => {
+  // اضافه کردن کلاس انیمیشن موشکی
+  logo.classList.add('rocket');
+
+  // حرکت صفحه به بالا
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // حذف کلاس بعد از اتمام انیمیشن برای امکان استفاده مجدد
+  setTimeout(() => logo.classList.remove('rocket'), 1000);
+});
+</script>
+
+
+
+
+
+
+</body>
+</html>
